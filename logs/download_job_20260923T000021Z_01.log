@@ -1,0 +1,141 @@
+Plan: 37 regions, 147 gene/tissue/locus targets
+GCST90129505 chr1_182587087_183587087: cached 7,118 rows
+GCST90129505 chr1_201416318_202416318: cached 7,477 rows
+GCST90129505 chr2_97158891_98158891: cached 4,388 rows
+GCST90129505 chr2_167668869_168668869: cached 7,537 rows
+Colon_Transverse chr1_182587087_183587087: cached 3,271 rows
+GCST90129505 chr2_217826533_218826533: cached 6,269 rows
+Colon_Transverse chr1_201416318_202416318: cached 3,466 rows
+GCST90129505 chr3_52346724_53537781: cached 7,880 rows
+Colon_Transverse chr2_97158891_98158891: cached 3,302 rows
+GCST90129505 chr3_112685041_113685041: cached 7,893 rows
+Colon_Transverse chr2_167668869_168668869: cached 3,958 rows
+GCST90129505 chr6_28394840_29394840: cached 8,398 rows
+Colon_Transverse chr2_217826533_218826533: cached 6,420 rows
+GCST90129505 chr6_30542408_31959318: cached 21,957 rows
+Colon_Transverse chr3_52346724_53537781: cached 17,065 rows
+Colon_Transverse chr3_112685041_113685041: cached 4,412 rows
+GCST90129505 chr6_32118955_33118955: cached 27,902 rows
+Colon_Transverse chr6_28394840_29394840: cached 17,178 rows
+Colon_Sigmoid chr1_182587087_183587087: cached 3,271 rows
+GCST90129505 chr6_116987868_117987868: cached 7,348 rows
+Colon_Sigmoid chr1_201416318_202416318: cached 6,932 rows
+Colon_Sigmoid chr2_97158891_98158891: cached 3,302 rows
+GCST90129505 chr7_2323655_3323655: cached 10,901 rows
+Colon_Sigmoid chr2_217826533_218826533: cached 6,420 rows
+GCST90129505 chr7_44610732_45610732: cached 7,496 rows
+Colon_Sigmoid chr3_52346724_53537781: cached 13,652 rows
+GCST90129505 chr7_73252929_74252929: cached 5,813 rows
+Colon_Sigmoid chr3_112685041_113685041: cached 4,412 rows
+GCST90129505 chr7_99379803_100379803: cached 5,678 rows
+Colon_Sigmoid chr6_28394840_29394840: cached 18,010 rows
+GCST90129505 chr8_126901060_127902647: cached 8,672 rows
+GCST90129505 chr9_133560541_134560541: cached 9,261 rows
+Colon_Transverse chr6_30542408_31959318: cached 136,399 rows
+GCST90129505 chr10_50386333_51386333: cached 6,564 rows
+GCST90129505 chr10_99030544_100030544: cached 6,746 rows
+GCST90129505 chr11_9810117_10810117: cached 7,687 rows
+Colon_Sigmoid chr6_30542408_31959318: cached 79,600 rows
+GCST90129505 chr11_61285208_62285208: cached 6,530 rows
+GCST90129505 chr11_74417698_75417698: cached 6,695 rows
+GCST90129505 chr11_101245280_102245280: cached 7,696 rows
+GCST90129505 chr11_110786111_111786111: cached 6,903 rows
+GCST90129505 chr12_50323107_51323107: cached 6,088 rows
+GCST90129505 chr12_56647065_57647065: cached 5,941 rows
+GCST90129505 chr12_70624549_71624549: cached 7,436 rows
+GCST90129505 chr12_111069952_112069952: cached 4,953 rows
+GCST90129505 chr13_36417513_37417513: cached 6,857 rows
+GCST90129505 chr14_50392940_51392940: cached 7,365 rows
+GCST90129505 chr14_51524937_52524937: cached 8,715 rows
+GCST90129505 chr17_406403_1406403: cached 10,260 rows
+GCST90129505 chr19_58006273_59006273: cached 4,235 rows
+GCST90129505 chr20_61857358_62857358: cached 9,483 rows
+GCST90129505 chr20_63177259_64177259: cached 8,964 rows
+GCST90129505 chr21_45852525_46852525: cached 7,530 rows
+GCST90129505 chrX_9295858_10295858: chromosome absent from source index; recorded as unavailable
+Colon_Sigmoid chr6_32118955_33118955: saved 80,130 rows
+Colon_Sigmoid chr6_116987868_117987868: saved 3,827 rows
+Colon_Sigmoid chr7_2323655_3323655: saved 5,519 rows
+Colon_Transverse chr6_32118955_33118955: saved 192,330 rows
+Colon_Sigmoid chr7_73252929_74252929: saved 4,778 rows
+Colon_Transverse chr6_116987868_117987868: saved 3,827 rows
+Colon_Transverse chr7_2323655_3323655: saved 5,519 rows
+Colon_Sigmoid chr7_99379803_100379803: saved 11,515 rows
+Colon_Transverse chr7_44610732_45610732: saved 3,693 rows
+Colon_Sigmoid chr9_133560541_134560541: saved 5,379 rows
+Colon_Sigmoid chr10_50386333_51386333: saved 2,862 rows
+Colon_Transverse chr7_73252929_74252929: saved 4,778 rows
+Colon_Sigmoid chr10_99030544_100030544: saved 6,278 rows
+Colon_Transverse chr7_99379803_100379803: saved 6,909 rows
+Colon_Sigmoid chr11_9810117_10810117: saved 4,082 rows
+Colon_Transverse chr8_126901060_127902647: saved 4,412 rows
+Colon_Sigmoid chr11_61285208_62285208: saved 9,660 rows
+Colon_Transverse chr9_133560541_134560541: saved 10,758 rows
+Colon_Transverse chr10_50386333_51386333: saved 6,232 rows
+Colon_Sigmoid chr11_74417698_75417698: saved 3,187 rows
+Colon_Transverse chr10_99030544_100030544: saved 6,278 rows
+Colon_Sigmoid chr11_110786111_111786111: saved 3,313 rows
+Colon_Transverse chr11_9810117_10810117: saved 4,082 rows
+Colon_Sigmoid chr12_50323107_51323107: saved 7,274 rows
+Colon_Sigmoid chr12_111069952_112069952: saved 2,332 rows
+Colon_Transverse chr11_61285208_62285208: saved 3,220 rows
+Colon_Transverse chr11_101245280_102245280: saved 3,979 rows
+Colon_Sigmoid chr17_406403_1406403: saved 5,395 rows
+Colon_Transverse chr11_110786111_111786111: saved 9,939 rows
+Colon_Transverse chr12_50323107_51323107: saved 5,527 rows
+Colon_Sigmoid chr19_58006273_59006273: saved 8,772 rows
+Colon_Transverse chr12_56647065_57647065: saved 2,331 rows
+Colon_Sigmoid chr20_61857358_62857358: saved 14,757 rows
+Colon_Transverse chr12_70624549_71624549: saved 3,844 rows
+Colon_Transverse chr13_36417513_37417513: saved 3,467 rows
+Colon_Transverse chr14_50392940_51392940: saved 11,106 rows
+Colon_Sigmoid chr20_63177259_64177259: saved 4,414 rows
+Colon_Transverse chr14_51524937_52524937: saved 4,794 rows
+Colon_Sigmoid chr21_45852525_46852525: saved 20,755 rows
+Colon_Sigmoid chrX_9295858_10295858: saved 2,777 rows
+Colon_Transverse chr19_58006273_59006273: saved 4,386 rows
+Colon_Transverse chr20_61857358_62857358: saved 14,757 rows
+Colon_Transverse chr21_45852525_46852525: saved 16,604 rows
+Colon_Transverse chrX_9295858_10295858: saved 5,554 rows
+{
+  "completed_utc": "2026-09-23T00:16:38.312998+00:00",
+  "status": "acquired_available_regions_for_qc_with_documented_gaps",
+  "studies": {
+    "GCST90129505": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90129001-GCST90130000/GCST90129505/harmonised/GCST90129505.h.tsv.gz",
+    "Colon_Sigmoid": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/imported/GTEx_V8/ge/Colon_Sigmoid.tsv.gz",
+    "Colon_Transverse": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/imported/GTEx_V8/ge/Colon_Transverse.tsv.gz"
+  },
+  "regions": 37,
+  "genes": 102,
+  "gene_tissue_pairs": 147,
+  "target_groups": 147,
+  "pvalue_filter": null,
+  "unavailable_gwas_regions": [
+    "chrX_9295858_10295858"
+  ],
+  "paired_regions": 36,
+  "paired_genes": 100,
+  "paired_gene_tissue_pairs": 144,
+  "note": "Provisional merged +/-500kb windows. No allele harmonization, deduplication, QC exclusions or colocalization performed.",
+  "rows": {
+    "gwas": 298636,
+    "eqtl": 876402
+  },
+  "files": [
+    {
+      "path": "data/processed/acquisition/gwas.regional.tsv.gz",
+      "bytes": 6959923,
+      "sha256": "a71581bd7aaa1f487c9bbf30961095846320396bbeebde47637596f5cebf8998"
+    },
+    {
+      "path": "data/processed/acquisition/eqtl.regional.tsv.gz",
+      "bytes": 15051678,
+      "sha256": "d1930f84906a224f3005cf8e4d4b7da1a690805238f20f9138ca1a98519d4e20"
+    },
+    {
+      "path": "data/processed/acquisition/gtex_expression_sdY.tsv",
+      "bytes": 91379,
+      "sha256": "4c470555d75c76b2e20096131908ff0243bcbb3390e9cc7d2b19c760558f48c1"
+    }
+  ]
+}

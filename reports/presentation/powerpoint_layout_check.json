@@ -1,0 +1,245 @@
+﻿[
+    {
+        "Name":  "result-2",
+        "Text":  "실제 분석 진행 결과: 후보 재정리까지 완료",
+        "Width":  864,
+        "Height":  55,
+        "TextWidth":  553.125061,
+        "TextHeight":  37.8,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-3",
+        "Text":  "공개 자료 확보 → 기준 정렬 → 실제 coloc → 누락 점검·최종 보고서",
+        "Width":  864,
+        "Height":  24,
+        "TextWidth":  480.125031,
+        "TextHeight":  20.4,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-6",
+        "Text":  "01  데이터 확보",
+        "Width":  182,
+        "Height":  24,
+        "TextWidth":  107.25,
+        "TextHeight":  19.2,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-7",
+        "Text":  "100개 유전자",
+        "Width":  182,
+        "Height":  35,
+        "TextWidth":  141.75,
+        "TextHeight":  28.8,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-8",
+        "Text":  "36개 구간 · 대장 2조직",
+        "Width":  184,
+        "Height":  20,
+        "TextWidth":  131.75,
+        "TextHeight":  16.2,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-9",
+        "Text":  "GWAS·eQTL 양쪽 자료 확보",
+        "Width":  184,
+        "Height":  19,
+        "TextWidth":  157.375046,
+        "TextHeight":  15.48,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-12",
+        "Text":  "02  기준 정렬",
+        "Width":  182,
+        "Height":  24,
+        "TextWidth":  92.5,
+        "TextHeight":  19.2,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-13",
+        "Text":  "111,807 SNP",
+        "Width":  182,
+        "Height":  35,
+        "TextWidth":  152.375046,
+        "TextHeight":  28.8,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-14",
+        "Text":  "GRCh38·대립유전자 대조",
+        "Width":  184,
+        "Height":  20,
+        "TextWidth":  150,
+        "TextHeight":  16.2,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-15",
+        "Text":  "중복·결측·모호한 변이 QC",
+        "Width":  184,
+        "Height":  19,
+        "TextWidth":  147.875046,
+        "TextHeight":  15.48,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-18",
+        "Text":  "03  실제 coloc",
+        "Width":  182,
+        "Height":  24,
+        "TextWidth":  104.75,
+        "TextHeight":  19.2,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-19",
+        "Text":  "144개 조합",
+        "Width":  182,
+        "Height":  35,
+        "TextWidth":  119.625038,
+        "TextHeight":  28.8,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-20",
+        "Text":  "3개 prior 설정 · 총 432회",
+        "Width":  184,
+        "Height":  20,
+        "TextWidth":  148.25,
+        "TextHeight":  16.2,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-21",
+        "Text":  "전체 사후확률 독립 검증",
+        "Width":  184,
+        "Height":  19,
+        "TextWidth":  130.25,
+        "TextHeight":  15.48,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-24",
+        "Text":  "04  후보 재정리",
+        "Width":  182,
+        "Height":  24,
+        "TextWidth":  107.25,
+        "TextHeight":  19.2,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-25",
+        "Text":  "9개 유전자",
+        "Width":  182,
+        "Height":  35,
+        "TextWidth":  113.5,
+        "TextHeight":  28.8,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-26",
+        "Text":  "세 prior 모두 PP.H4 ≥ 0.8",
+        "Width":  184,
+        "Height":  20,
+        "TextWidth":  156.25,
+        "TextHeight":  16.2,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-27",
+        "Text":  "조건부 지지 · 11개 조합",
+        "Width":  184,
+        "Height":  19,
+        "TextWidth":  130.875046,
+        "TextHeight":  15.48,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-28",
+        "Text":  "조건부 지지 후보 9개",
+        "Width":  830,
+        "Height":  26,
+        "TextWidth":  176.75,
+        "TextHeight":  24,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-29",
+        "Text":  "ACTR1B · LRP1 · COLCA2 · LMOD1 · ATF1",
+        "Width":  850,
+        "Height":  25,
+        "TextWidth":  374,
+        "TextHeight":  22.8,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-30",
+        "Text":  "COLCA1 · LINC02044 · MZF1-AS1 · RP11-351I24.1",
+        "Width":  850,
+        "Height":  25,
+        "TextWidth":  440.25,
+        "TextHeight":  22.8,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-32",
+        "Text":  "누락 점검과 해석 범위",
+        "Width":  840,
+        "Height":  22,
+        "TextWidth":  151.125046,
+        "TextHeight":  19.8,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-33",
+        "Text":  "최강 GWAS 변이 누락 137개 조합: eQTL 원본 부재 131 · cis 범위 밖 6",
+        "Width":  840,
+        "Height":  19,
+        "TextWidth":  438.625031,
+        "TextHeight":  18,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-34",
+        "Text":  "점검 범위 내 처리 누락 0건 · 모호한 lead 4개 제외 · X염색체 3개 조합 보류",
+        "Width":  840,
+        "Height":  19,
+        "TextWidth":  450.75,
+        "TextHeight":  17.4,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-35",
+        "Text":  "원인 유전자 확정 아님: LD·복수 신호·독립 검증 필요",
+        "Width":  840,
+        "Height":  19,
+        "TextWidth":  330.25,
+        "TextHeight":  18,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-36",
+        "Text":  "GCST90129505 · GTEx v8  |  분석·누락 점검·보고서 완료  ·  2026.09.23",
+        "Width":  818,
+        "Height":  16,
+        "TextWidth":  311.75,
+        "TextHeight":  12,
+        "Overflow":  false
+    },
+    {
+        "Name":  "result-37",
+        "Text":  "10",
+        "Width":  36,
+        "Height":  18,
+        "TextWidth":  15,
+        "TextHeight":  13.5,
+        "Overflow":  false
+    }
+]

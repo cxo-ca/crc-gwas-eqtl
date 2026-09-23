@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "completed_utc": "2026-09-23T02:04:43.499850+00:00",
+  "source_checksum_records_checked": 189,
+  "candidate_genes": 102,
+  "candidate_groups": 147,
+  "existing_coloc_results_unchanged": true,
+  "local_report_links_checked": 10,
+  "posterior_values_preserved": true,
+  "unanalysed_groups_have_no_posterior": true
+}

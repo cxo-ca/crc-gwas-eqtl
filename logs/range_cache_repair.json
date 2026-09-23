@@ -1,0 +1,32 @@
+[
+  {
+    "manifest": "data\\raw\\summary_statistics\\range_cache\\Colon_Sigmoid\\fcdabcfdf6c66e7eb528\\manifest.json",
+    "file": "f1bba9ef81d3601b08023a906e955f07815e7c84b51b933e78b3319c2a99d4a7.bin",
+    "action": "invalidate_and_redownload"
+  },
+  {
+    "manifest": "data\\raw\\summary_statistics\\range_cache\\Colon_Sigmoid\\fcdabcfdf6c66e7eb528\\manifest.json",
+    "file": "de174bf1d85cf08b40b7da6ac8cc8e2896f80b94179fae0f3f00997800401236.bin",
+    "action": "invalidate_and_redownload"
+  },
+  {
+    "manifest": "data\\raw\\summary_statistics\\range_cache\\Colon_Sigmoid\\fcdabcfdf6c66e7eb528\\manifest.json",
+    "file": "d3eaf80955829f374c38df6cfffa942d69a0f743868501e9d790b596cb55f20d.bin",
+    "action": "invalidate_and_redownload"
+  },
+  {
+    "manifest": "data\\raw\\summary_statistics\\range_cache\\Colon_Transverse\\3f78cbe57ec2a1973f9d\\manifest.json",
+    "file": "2bdb902d0f98e187585c3eb3ac4ad59a19a353dd6134a25cc36a90bff074abf0.bin",
+    "action": "invalidate_and_redownload"
+  },
+  {
+    "manifest": "data\\raw\\summary_statistics\\range_cache\\Colon_Transverse\\3f78cbe57ec2a1973f9d\\manifest.json",
+    "file": "029bc825c17e09f739e23ad99a7ca835751ad47158f37cee76e745ddfb286e22.bin",
+    "action": "invalidate_and_redownload"
+  },
+  {
+    "manifest": "data\\raw\\summary_statistics\\range_cache\\Colon_Transverse\\3f78cbe57ec2a1973f9d\\manifest.json",
+    "file": "aa9fe478a5eae6342ff0d7278f2d6963dddd30a4bcbac6c74ccd070cc01ba74b.bin",
+    "action": "invalidate_and_redownload"
+  }
+]

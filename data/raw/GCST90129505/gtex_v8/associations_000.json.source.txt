@@ -1,0 +1,2 @@
+https://www.ebi.ac.uk/gwas/rest/api/studies/GCST90129505/associations?size=500
+2026-09-22 08:17:16 UTC

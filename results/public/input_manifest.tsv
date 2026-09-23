@@ -1,0 +1,5 @@
+path	bytes	md5
+data/processed/gwas_lead_variants.tsv	17746	e8b898d29d5381d6e968c48b235390fe
+data/processed/variant_mapping.tsv	11885	f41f772bb227579ce60adb7bab8b1237
+data/processed/gtex_significant_eqtl.tsv	14592	5f73d360a68ef1b0d229027ddc74713f
+config.R	286	e2f0f693243592346b953645b9fde165

@@ -1,0 +1,7 @@
+source('R/bootstrap.R'); source('R/utils.R'); source('R/coloc_pipeline.R'); source('config.R')
+inputs <- c('data/input/gwas.tsv', 'data/input/eqtl.tsv', 'data/input/metadata.R')
+if (!all(file.exists(inputs))) stop('Prepare gwas.tsv, eqtl.tsv and metadata.R; see docs/DATA_DICTIONARY.md')
+source('data/input/metadata.R')
+outdir <- file.path('results/coloc', format(Sys.time(), '%Y%m%d_%H%M%S'))
+run_coloc(read_tsv(inputs[1]), read_tsv(inputs[2]), metadata, config, outdir)
+manifest(inputs, file.path(outdir, 'input_manifest.tsv'))

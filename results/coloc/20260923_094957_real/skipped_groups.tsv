@@ -1,0 +1,4 @@
+locus	gene_id	gene_symbol	tissue	reason
+chrX_9295858_10295858	ENSG00000146950.12	SHROOM2	Colon_Sigmoid	gwas_region_unavailable
+chrX_9295858_10295858	ENSG00000101850.12	GPR143	Colon_Transverse	gwas_region_unavailable
+chrX_9295858_10295858	ENSG00000146950.12	SHROOM2	Colon_Transverse	gwas_region_unavailable

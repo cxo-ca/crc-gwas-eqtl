@@ -1,0 +1,20 @@
+{
+  "status": "completed_available_data",
+  "pid": 9300,
+  "started_at_utc": "2026-09-23T00:00:21.554878+00:00",
+  "max_attempts": 12,
+  "timeout_hours": 8,
+  "attempt": 1,
+  "log": "logs/download_job_20260923T000021Z_01.log",
+  "updated_at_utc": "2026-09-23T00:16:42.797890+00:00",
+  "completed_gwas_windows": 36,
+  "completed_eqtl_windows": 61,
+  "planned_eqtl_windows": 61,
+  "worker_pid": 15440,
+  "exit_code": 0,
+  "summary": "data/processed/acquisition/acquisition_summary.json",
+  "paired_genes": 100,
+  "unavailable_gwas_regions": [
+    "chrX_9295858_10295858"
+  ]
+}

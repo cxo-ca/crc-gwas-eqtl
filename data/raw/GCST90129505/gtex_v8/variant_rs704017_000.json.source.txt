@@ -1,0 +1,2 @@
+https://gtexportal.org/api/v2/dataset/variant?snpId=rs704017&datasetId=gtex_v8&itemsPerPage=1000&page=0
+2026-09-22 08:17:22 UTC

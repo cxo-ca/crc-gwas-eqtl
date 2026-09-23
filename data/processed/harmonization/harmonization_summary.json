@@ -1,0 +1,105 @@
+{
+  "completed_utc": "2026-09-23T00:41:24.479618+00:00",
+  "status": "harmonized_not_coloc_run",
+  "build": "GRCh38",
+  "effect_orientation": "GWAS effect allele in shared.aligned.tsv.gz",
+  "cleaned_eqtl_orientation": "Native GTEx ALT; unchanged, including unmatched rows",
+  "matching_key": "chromosome:1-based_position:alphabetically_sorted_allele_pair",
+  "counts": {
+    "gwas_raw_rows": 298636,
+    "gwas_clean_rows": 255354,
+    "gwas_excluded_rows": 43282,
+    "eqtl_raw_rows": 876402,
+    "eqtl_clean_rows": 693951,
+    "eqtl_excluded_rows": 182451,
+    "shared_rows": 630083,
+    "flipped_rows": 0
+  },
+  "exclusion_reason_counts": {
+    "gwas:palindromic_snp": 43282,
+    "eqtl:palindromic_snp": 117448,
+    "eqtl:non_snv": 64204,
+    "eqtl:duplicate_rsid_alias": 799,
+    "eqtl:invalid_se": 1
+  },
+  "groups": 147,
+  "groups_meeting_min_shared_snps": 144,
+  "genes_meeting_min_shared_snps": 100,
+  "min_shared_snps": 50,
+  "n_groups_with_allele_mismatch": 86,
+  "limitations": [
+    "Provisional merged +/-500kb windows; LD boundaries not established",
+    "50 shared SNPs is an operational minimum, not proof of adequate coverage",
+    "Palindromic SNPs and non-SNVs excluded; no strand complementation or indel normalization",
+    "Source GRCh38 harmonization used; no independent reference FASTA check",
+    "No ancestry-specific allele-frequency/LD comparison; mixed-ancestry GWAS",
+    "X GWAS missing for SHROOM2/GPR143; no colocalization performed"
+  ],
+  "inputs": [
+    {
+      "path": "data/processed/acquisition/gwas.regional.tsv.gz",
+      "sha256": "a8b052564a254dedf4cef89d924734d8fa29a38035c6e95126821f8edf11eea5"
+    },
+    {
+      "path": "data/processed/acquisition/eqtl.regional.tsv.gz",
+      "sha256": "c7b58426741fe9377f32dc52c83e2d3da9e00f81c37ad19dcaec4187bd898eb7"
+    },
+    {
+      "path": "data/processed/acquisition/gtex_expression_sdY.tsv",
+      "sha256": "4c470555d75c76b2e20096131908ff0243bcbb3390e9cc7d2b19c760558f48c1"
+    },
+    {
+      "path": "data/processed/acquisition/regions.tsv",
+      "sha256": "fc4152208d6a8960011c7b59be8dd6754421074698f4eb5a757635dfb997a24d"
+    },
+    {
+      "path": "data/processed/acquisition/targets.tsv",
+      "sha256": "095c06ded49dae5c1640453d33b608d8661224018ce73fedeb15249f2f4f51da"
+    },
+    {
+      "path": "data/processed/acquisition/acquisition_summary.json",
+      "sha256": "02581a6ab657b2a596adb84d092a8a6810ea0225620c011d76cc31e2029f8d79"
+    },
+    {
+      "path": "scripts/harmonize_regional_sumstats.py",
+      "sha256": "ef2cf6d56048f44d76ec29cd36c8880a23bd9abbcd83270c26c8ff969d873421"
+    }
+  ],
+  "files": [
+    {
+      "path": "data/processed/harmonization/eqtl.cleaned.tsv.gz",
+      "bytes": 14789354,
+      "sha256": "047ca4d0a87683e144ec5910d9e9ec6665bfde2722ef63b909122fdb0ee0a596"
+    },
+    {
+      "path": "data/processed/harmonization/excluded_rows.tsv.gz",
+      "bytes": 5115028,
+      "sha256": "834a3dcc571f83157a44793340876d3fd0bbd1b8d754172866b86359f5cb6496"
+    },
+    {
+      "path": "data/processed/harmonization/group_qc.tsv",
+      "bytes": 29937,
+      "sha256": "4c01b99ef60fef9e0467387aa652dae81970163ec31856612512ae54bca65311"
+    },
+    {
+      "path": "data/processed/harmonization/gwas.cleaned.tsv.gz",
+      "bytes": 7595554,
+      "sha256": "b5792a645d6090d83845243be08619d3754deccaf9ae60f8b103e2535e665930"
+    },
+    {
+      "path": "data/processed/harmonization/lead_variant_qc.tsv",
+      "bytes": 1824,
+      "sha256": "b80e7b8a6ac9b4b162416325c6d9b31f96e4d38439e10a94effa236fa6f77ccf"
+    },
+    {
+      "path": "data/processed/harmonization/shared.aligned.tsv.gz",
+      "bytes": 30635162,
+      "sha256": "9f46069c4d79a48cc8c2baa30466021f24fc445f6d6aa0be5f2f5fb0b1a9d610"
+    },
+    {
+      "path": "data/processed/harmonization/unmatched_eqtl.tsv.gz",
+      "bytes": 489038,
+      "sha256": "1465a90ca82a481ed137dd9b0a167c4bd0b10c611de852300724cfb27be17c00"
+    }
+  ]
+}

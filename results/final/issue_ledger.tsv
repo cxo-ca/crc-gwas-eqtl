@@ -1,0 +1,12 @@
+item	status	evidence	disposition
+processing_integrity	checked	181 input/output checksum records verified; 96 indexed coordinate queries replayed offline	No omission found within audited scope; no data rescued
+missing_GWAS_peaks	unresolved_source_coverage	137 groups: 131 positions absent from imported eQTL source; 6 outside cis window	Interpret PP.H4 conditional on shared variants; do not impute missing effects
+missing_eQTL_peaks	unresolved_source_coverage	4 groups: peak position absent from harmonised GWAS source	Retain group-level coverage limitation
+palindromic_leads	intentional_QC_exclusion	4 lead SNPs; 36 direct discovery gene/tissue pairs affected	Keep excluded until strand/frequency evidence supports rescue
+X_chromosome	unresolved_source_absence	2 genes / 3 groups; source GWAS index contains autosomes only	Keep as unanalysed, not negative results
+GWAS_extreme_effects	source_quality_unresolved	Some source beta values are extreme; per-cohort estimates/QC not available	No arbitrary removal; verify original study quality before causal claims
+LD_and_multiple_signals	not_performed	Distance windows; no ancestry-matched LD or conditional/SuSiE analysis	Required for stronger multi-signal interpretation
+reference_and_indels	not_performed	Provider GRCh38 alignment used; no independent FASTA/indel normalization	No claim that all variants or orientations were rescued
+phenotype_scope	documented	Combined colorectal cancer study; no separate colon/rectal subtype analysis	Do not infer subtype-specific or tumor-specific causality
+independent_validation	not_performed	Tissue donors overlap; no external cohort or functional experiments	Two tissues are not independent replication
+discovery_selection	documented	102 candidates selected from significant lead/eQTL overlap	Not genome-wide gene discovery; no gene-level FDR or enrichment claims

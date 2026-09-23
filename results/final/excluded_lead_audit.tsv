@@ -1,0 +1,5 @@
+locus	rsid	gwas_qc	key	effect_allele	other_allele	source_p	hm_code	affected_target_pairs	disposition
+chr3_52346724_53537781	rs2581817	palindromic_snp	3:53037781:C:G	C	G	4.79506e-13	5	8	intentional_QC_exclusion; not restored without strand/frequency evidence
+chr6_28394840_29394840	rs209142	palindromic_snp	6:28894840:C:G	C	G	3.65873e-08	5	10	intentional_QC_exclusion; not restored without strand/frequency evidence
+chr6_32118955_33118955	rs9271363	palindromic_snp	6:32618955:C:G	C	G	8.8606e-20	5	17	intentional_QC_exclusion; not restored without strand/frequency evidence
+chr12_56647065_57647065	rs7398375	palindromic_snp	12:57147065:C:G	G	C	3.6952e-19	5	1	intentional_QC_exclusion; not restored without strand/frequency evidence

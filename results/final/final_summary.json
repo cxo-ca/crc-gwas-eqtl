@@ -1,0 +1,59 @@
+{
+  "status": "final_exploratory_report_complete_with_explicit_limits",
+  "completed_utc": "2026-09-23T02:03:30.690740+00:00",
+  "input_run": "results/coloc/20260923_094957_real",
+  "candidate_genes": 102,
+  "candidate_groups": 147,
+  "analyzed_genes": 100,
+  "analyzed_groups": 144,
+  "gene_tiers": {
+    "A_conditional_prior_stable": 9,
+    "B_baseline_prior_sensitive": 9,
+    "C_permissive_prior_only": 7,
+    "D_no_threshold_support": 75,
+    "E_data_unavailable": 2
+  },
+  "group_tiers": {
+    "A_conditional_prior_stable": 11,
+    "B_baseline_prior_sensitive": 12,
+    "C_permissive_prior_only": 8,
+    "D_no_threshold_support": 113,
+    "E_data_unavailable": 3
+  },
+  "prior_stable_genes": [
+    "ACTR1B",
+    "LRP1",
+    "COLCA2",
+    "LMOD1",
+    "ATF1",
+    "COLCA1",
+    "LINC02044",
+    "MZF1-AS1",
+    "RP11-351I24.1"
+  ],
+  "audited_pipeline_omissions": 0,
+  "recovered_rows": 0,
+  "external_or_functional_validation": false,
+  "audit_scope": "Audit of reported missing peaks, excluded leads and X availability; not every absent SNP genome-wide",
+  "all_original_candidates_accounted_for": true,
+  "direction_scope": "Association signs at the top conditional-H4 SNP of the representative group; not mediation or gene-wide direction",
+  "posterior_validation": {
+    "status": "passed",
+    "method": "Independent Python Wakefield ABF and H0-H4 enumeration from aligned inputs",
+    "fits_checked": 432,
+    "shared_rows_checked": 630083,
+    "max_absolute_posterior_error": 4.996003610813204e-16,
+    "tolerance": 1e-07
+  },
+  "final_validation": {
+    "status": "passed",
+    "completed_utc": "2026-09-23T02:04:43.499850+00:00",
+    "source_checksum_records_checked": 189,
+    "candidate_genes": 102,
+    "candidate_groups": 147,
+    "existing_coloc_results_unchanged": true,
+    "local_report_links_checked": 10,
+    "posterior_values_preserved": true,
+    "unanalysed_groups_have_no_posterior": true
+  }
+}

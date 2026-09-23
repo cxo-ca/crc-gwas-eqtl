@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "method": "Independent Python Wakefield ABF and H0-H4 enumeration from aligned inputs",
+  "fits_checked": 432,
+  "shared_rows_checked": 630083,
+  "max_absolute_posterior_error": 4.996003610813204e-16,
+  "tolerance": 1e-07
+}

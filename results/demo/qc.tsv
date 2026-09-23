@@ -1,0 +1,3 @@
+locus	gene_id	tissue	n_gwas	n_eqtl	n_gwas_excluded_alleles	n_eqtl_excluded_alleles	n_shared	n_flipped	fraction_gwas_shared	fraction_eqtl_shared	status
+SIMULATED_LOCUS	SIM_SHARED	SIMULATED_COLON	240	240	0	0	240	120	1	1	analyzed
+SIMULATED_LOCUS	SIM_DISTINCT	SIMULATED_COLON	240	240	0	0	240	120	1	1	analyzed

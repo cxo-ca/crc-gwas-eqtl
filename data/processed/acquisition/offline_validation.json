@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "verified_at_utc": "2026-09-23T00:20:12.137640+00:00",
+  "comparison": "SHA-256 of uncompressed TSV content; gzip timestamps excluded",
+  "hashes": {
+    "data\\processed\\acquisition\\gwas.regional.tsv.gz": "c9e3fd35546a9dfe93befe25a0776b4e72748fbd9a190ed9c649b098141a29fa",
+    "data\\processed\\acquisition\\eqtl.regional.tsv.gz": "e42d6d8a95325e1036fc93aee8c7841ccbba5efe090f2e3f94ee1c9f19b0fa0b",
+    "data\\processed\\acquisition\\gtex_expression_sdY.tsv": "4c470555d75c76b2e20096131908ff0243bcbb3390e9cc7d2b19c760558f48c1"
+  }
+}

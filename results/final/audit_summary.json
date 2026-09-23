@@ -1,0 +1,28 @@
+{
+  "status": "audit_complete_with_unresolved_source_and_method_limits",
+  "completed_utc": "2026-09-23T01:56:41.321873+00:00",
+  "verified_artifact_hashes": 181,
+  "missing_gwas_peak_groups": 137,
+  "missing_eqtl_peak_groups": 4,
+  "reason_counts": {
+    "eqtl:position_absent_from_imported_source": 131,
+    "eqtl:outside_documented_cis_window": 6,
+    "gwas:position_absent_from_harmonized_gwas": 4
+  },
+  "pipeline_omissions_found": 0,
+  "recovered_rows": 0,
+  "excluded_leads": 4,
+  "excluded_lead_target_pairs": 36,
+  "x_reference_absent_from_gwas": true,
+  "x_skipped_groups": 3,
+  "scope": "Audit of reported missing peaks, excluded leads and X availability; not every absent SNP genome-wide",
+  "unresolved": [
+    "Original GWAS allele frequencies absent where NA; no cohort-level genotype/QC data",
+    "No LD/recombination boundary validation or conditional/SuSiE multi-signal analysis",
+    "No independent reference-FASTA check or palindromic/indel rescue",
+    "Candidate set selected via significant eQTL overlap; not genome-wide gene screening",
+    "No independent cohort or functional validation"
+  ],
+  "input_run": "results/coloc/20260923_094957_real",
+  "indexed_source_queries": 96
+}

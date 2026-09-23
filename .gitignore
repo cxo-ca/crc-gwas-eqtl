@@ -1,0 +1,26 @@
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.Rlib/
+data/raw/private/
+data/input/*.tsv
+!data/input/*.example.tsv
+*.part
+*.partial
+__pycache__/
+
+# Local browser profile used only while rendering the introductory PDF.
+reports/introduction/.chrome-print/
+
+# Downloaded third-party summary statistics and range caches. These are
+# reproducible from the source URLs/checksums recorded in docs/ and manifests.
+data/raw/summary_statistics/
+
+# This uncompressed analysis hand-off exceeds GitHub's 100 MB single-file
+# limit. The equivalent compressed aligned input is kept under data/processed/.
+results/coloc/*/harmonized.tsv
+
+# Test-created temporary directories.
+tests/tmp*/
+*.lock

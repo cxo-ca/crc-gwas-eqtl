@@ -1,0 +1,42 @@
+{
+  "completed_utc": "2026-09-23T00:20:10.709808+00:00",
+  "status": "acquired_available_regions_for_qc_with_documented_gaps",
+  "studies": {
+    "GCST90129505": "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST90129001-GCST90130000/GCST90129505/harmonised/GCST90129505.h.tsv.gz",
+    "Colon_Sigmoid": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/imported/GTEx_V8/ge/Colon_Sigmoid.tsv.gz",
+    "Colon_Transverse": "https://ftp.ebi.ac.uk/pub/databases/spot/eQTL/imported/GTEx_V8/ge/Colon_Transverse.tsv.gz"
+  },
+  "regions": 37,
+  "genes": 102,
+  "gene_tissue_pairs": 147,
+  "target_groups": 147,
+  "pvalue_filter": null,
+  "unavailable_gwas_regions": [
+    "chrX_9295858_10295858"
+  ],
+  "paired_regions": 36,
+  "paired_genes": 100,
+  "paired_gene_tissue_pairs": 144,
+  "note": "Provisional merged +/-500kb windows. No allele harmonization, deduplication, QC exclusions or colocalization performed.",
+  "rows": {
+    "gwas": 298636,
+    "eqtl": 876402
+  },
+  "files": [
+    {
+      "path": "data/processed/acquisition/gwas.regional.tsv.gz",
+      "bytes": 6959923,
+      "sha256": "a8b052564a254dedf4cef89d924734d8fa29a38035c6e95126821f8edf11eea5"
+    },
+    {
+      "path": "data/processed/acquisition/eqtl.regional.tsv.gz",
+      "bytes": 15051678,
+      "sha256": "c7b58426741fe9377f32dc52c83e2d3da9e00f81c37ad19dcaec4187bd898eb7"
+    },
+    {
+      "path": "data/processed/acquisition/gtex_expression_sdY.tsv",
+      "bytes": 91379,
+      "sha256": "4c470555d75c76b2e20096131908ff0243bcbb3390e9cc7d2b19c760558f48c1"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "status": "completed_and_validated",
+  "real_data": true,
+  "run": "results/coloc/20260923_094957_real",
+  "completed_utc": "2026-09-23T01:46:47.122457+00:00",
+  "coloc_version": "5.2.3",
+  "analyzed_genes": 100,
+  "analyzed_groups": 144,
+  "skipped_groups": 3,
+  "fits": 432,
+  "group_categories": {
+    "robust_across_tested_priors": 11,
+    "baseline_only_sensitive": 12,
+    "permissive_prior_only": 8,
+    "below_threshold": 113
+  },
+  "baseline_supported_genes": 18,
+  "robust_genes": 9,
+  "robust_both_tissues_genes": 2,
+  "groups_with_adjusted_priors": 29,
+  "groups_missing_strongest_clean_gwas": 137,
+  "groups_missing_strongest_clean_eqtl": 4,
+  "validation": {
+    "status": "passed",
+    "method": "Independent Python Wakefield ABF and H0-H4 enumeration from aligned inputs",
+    "fits_checked": 432,
+    "shared_rows_checked": 630083,
+    "max_absolute_posterior_error": 4.996003610813204e-16,
+    "tolerance": 1e-07
+  }
+}
