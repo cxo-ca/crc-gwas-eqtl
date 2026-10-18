@@ -1,6 +1,6 @@
 # 대장암 GWAS·eQTL 기반 유전자 후보 탐색
 
-R로 공개 대장암 GWAS 변이와 대장 조직 eQTL을 연결하고, 구간 전체 요약통계가 준비되면 공위치 분석(colocalization)으로 후보 근거를 평가하는 프로젝트입니다.
+R로 공개 대장암 GWAS 변이와 대장 조직 eQTL을 연결하고, 확보한 구간 요약통계로 공위치 분석(colocalization)과 사전확률 민감도 분석을 수행한 프로젝트입니다. 코드, 후보표, QC·재현 기록과 최종 탐색적 분석 보고서를 포함합니다.
 
 ## 현재 완료된 분석
 
@@ -56,9 +56,9 @@ source("scripts/setup.R")
 source("scripts/02_analyze_public.R")
 ```
 
-Windows PowerShell에서 전체 흐름을 실행할 수도 있습니다.
+Windows PowerShell에서도 공개 자료 후보 탐색을 실행할 수 있습니다.
 
-공개 자료의 수집·분석을 한 번에 재실행하려면 `Rscript run.R --offline`을 사용합니다.
+공개 API 캐시를 읽어 초기 후보 탐색까지 재실행하려면 `Rscript run.R --offline`을 사용합니다. 이 실행기는 `01_fetch_public.R`과 `02_analyze_public.R`만 실행하며, 실제 공위치 분석·누락 점검·최종 보고서 생성은 포함하지 않습니다. 실제 공위치 분석은 아래 명령을, 최종 정리는 [최종 보고서 실행 안내](docs/FINAL_REPORT.md)를 따르세요.
 
 ```powershell
 & 'C:\Program Files\R\R-4.6.1\bin\Rscript.exe' --vanilla scripts/setup.R --coloc
@@ -77,7 +77,7 @@ Windows PowerShell에서 전체 흐름을 실행할 수도 있습니다.
 1. **공개 자료 수집**: `GCST90129505`의 등록 연관 변이를 수집하고 p ≤ 5×10⁻⁸로 선별합니다. GTEx 공식 API로 rsID를 GRCh38 ref/alt 변이에 매핑합니다.
 2. **조직별 후보 탐색**: GTEx v8 `Colon_Transverse`, `Colon_Sigmoid`의 유의한 cis-eQTL과 직접 연결합니다. 버전을 명시해 API 기본 버전이 바뀌어도 혼합하지 않습니다. 모든 페이지를 수집합니다.
 3. **후보 정리**: 두 조직 관찰 여부 → 최소 eQTL p값 → 최소 GWAS p값 순으로 정렬합니다. 순서는 검토 편의를 위한 것이며 통계적 인과확률이나 검증된 종합점수가 아닙니다.
-4. **공위치 분석 준비**: `coloc::coloc.abf`를 사용하며 H0–H4와 p12 사전확률 민감도를 저장합니다. 합성 자료에서 공통 피크와 서로 다른 피크를 구별하는지 검증합니다.
+4. **공위치 분석·검증**: 확보·정렬한 실제 구간 자료에 `coloc::coloc.abf`를 적용해 H0–H4와 p12 사전확률 민감도를 저장했습니다. 합성 자료의 공통·상이 피크 검증과 실제 432회 분석의 독립 posterior 검증을 수행했습니다. 후보 재정리와 누락 점검은 [최종 보고서](docs/FINAL_REPORT.md)에 기록했습니다.
 
 기존 후보 탐색 결과인 `results/public/`은 유의한 lead 변이와 유의 eQTL만 포함하므로 **coloc에 바로 넣을 수 없습니다**. `data/processed/acquisition/`에는 확보 원본을, `data/processed/harmonization/`에는 QC·정렬 결과를 저장합니다. 두 단계 모두 p값에 따른 유의성 선별을 하지 않았습니다. 공위치 분석 전에는 임시 구간과 coverage, 제외된 lead를 검토해야 합니다.
 
