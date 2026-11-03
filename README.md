@@ -1,131 +1,149 @@
 # 대장암 GWAS·eQTL 기반 유전자 후보 탐색
 
-R로 공개 대장암 GWAS 변이와 대장 조직 eQTL을 연결하고, 확보한 구간 요약통계로 공위치 분석(colocalization)과 사전확률 민감도 분석을 수행한 프로젝트입니다. 코드, 후보표, QC·재현 기록과 최종 탐색적 분석 보고서를 포함합니다.
+공개 대장암 GWAS와 대장 조직 eQTL을 연결해 **후속 기능 검증을 위한 후보 유전자**를 찾는 R·Python 연구 프로젝트입니다. 공위치 분석(colocalization)으로 두 연관 신호가 원인 변이를 공유한다는 가설을 평가하고, 사전확률을 바꾸어 후보 지지의 안정성을 확인했습니다.
 
-## 현재 완료된 분석
+**현재 상태:** 2026-09-23 기준 실제 자료 분석, 누락 점검, 후보 재분류와 최종 보고서 작성을 완료했습니다. 102개 초기 후보 중 100개를 분석했으며, **9개 유전자·11개 유전자–조직 조합**이 시험한 세 사전확률 설정 모두에서 기준을 유지했습니다. 현재 자료와 모델에 조건부인 탐색적 결과이며, 원인 유전자 확정이나 기능 실험 완료를 의미하지 않습니다.
 
-2026-09-23에 **앞 단계 누락 점검과 후보 재정리·최종 보고서 작성**까지 완료했습니다. 점검한 누락은 사용한 원본의 부재·cis 범위·의도적 QC 제외로 확인됐으며, 확인 범위에서 처리 과정 누락이나 복구 행은 없었습니다. 원래 후보 102개를 모두 유지해 prior 지지가 안정적인 조건부 후보 9개, 기본 prior 지지·민감 후보 9개, 큰 prior에서만 지지 7개, 기준 미충족 75개, 자료 부재 보류 2개로 정리했습니다.
+![공개자료 연결부터 후보 분류·조직별 지지·해석 제한까지 정리한 연구 요약](reports/overview/research_overview.png)
 
-- **[최종 보고서](reports/final_report.html)** · [Markdown](reports/final_report.md)
-- **[한 장 연구 요약 그림](reports/overview/research_overview.png)** · [발표·인쇄용 PDF](reports/overview/research_overview.pdf) · [그림 생성 코드](scripts/plot_research_overview.py)
-- **[처음 보는 사람을 위한 6쪽 소개 자료](reports/introduction/research_intro.pdf)** · [웹 문서](reports/introduction/research_intro.html) · [3분 발표 설명문](reports/introduction/research_intro_script.md)
-- [전 단계 누락 점검](docs/PREVIOUS_STAGE_AUDIT.md)
-- [전체 후보 102개](results/final/candidates.tsv) · [조합별 147개 결과·효과 방향·제한](results/final/candidate_groups.tsv)
+[요약 PDF](reports/overview/research_overview.pdf) · [최종 보고서](reports/final_report.md) · [6쪽 소개 자료](reports/introduction/research_intro.pdf) · [전체 후보표](results/final/candidates.tsv)
 
-현재 확보한 자료에 대한 탐색적 분석의 최종 정리입니다. LD·복수 신호·원본 추정 품질·독립/기능 검증은 남아 있으며 원인 유전자 확정을 뜻하지 않습니다.
+## 연구 질문과 자료
 
-2026-09-22에 **실제 공개 자료의 1차 후보 탐색**을 실행했습니다.
+> 대장암 감수성과 연관된 유전 신호는 대장 조직의 유전자 발현 조절 신호와 원인 변이를 공유하는가?
 
-|항목|결과|
+|항목|사용 자료·설정|
+|---|---|
+|대장암 GWAS|GWAS Catalog `GCST90129505` · 유럽·동아시아 메타분석|
+|대장 조직 eQTL|GTEx v8 `Colon_Sigmoid`(S상결장), `Colon_Transverse`(횡행결장)|
+|유전체 좌표|GRCh38|
+|초기 후보 선정|유의한 GWAS 변이(p ≤ 5×10⁻⁸)와 유의한 cis-eQTL의 직접 중첩|
+|공위치 분석|`coloc::coloc.abf` · 형질별 구간 내 최대 하나의 원인 변이 가정|
+|민감도 분석|요청 p1=p2=10⁻⁴, p12=10⁻⁶·10⁻⁵·10⁻⁴ · PP.H4 ≥ 0.8을 운영 기준으로 사용|
+
+분석 흐름은 **공개자료 수집 → 초기 후보 탐색 → 구간 요약통계 확보 → QC·대립유전자 정렬 → 공위치·민감도 분석 → 누락 점검·후보 정리**입니다. 공위치 분석에는 유의성 필터를 적용하지 않은 구간 통계를 사용했습니다. 자료 버전·출처·이용 조건은 [자료 출처](docs/SOURCES.md)와 [확보 기록](docs/DATA_ACQUISITION.md)에 정리했습니다.
+
+## 핵심 결과
+
+|분석 단계|결과|
 |---|---:|
-|GWAS Catalog의 유의한 단일 rsID (p ≤ 5×10⁻⁸)|174|
-|GTEx v8에 매핑된 rsID|169|
-|매핑되지 않은 rsID|5|
-|변이–유전자–조직 연결|153|
-|후보 유전자|102|
-|두 대장 조직에서 관찰된 후보|45|
+|초기 탐색의 유의한 단일 rsID|174개 · GTEx 매핑 169개, 미매핑 5개|
+|초기 후보|102개 유전자 · 후속 대상 147개 유전자–조직 조합|
+|실제 공위치 분석|100개 유전자 · 144개 조합|
+|정렬한 공통 통계|630,083행 · 유전자·조직별 반복 포함|
+|사전확률 3개 설정의 계산|432회 · 전체 posterior를 별도 Python 계산으로 대조|
+|기본 설정에서 PP.H4 ≥ 0.8|18개 유전자 · 23개 조합|
+|세 설정 모두에서 PP.H4 ≥ 0.8|9개 유전자 · 11개 조합|
 
-- [HTML 분석 보고서](reports/public_report.html)
-- [전체 후보 유전자 표](results/public/candidate_genes.tsv)
-- [변이별 근거 표](results/public/variant_gene_evidence.tsv)
-- [품질 점검 요약](results/public/qc_summary.tsv)
-- [원본 자료 체크섬](data/processed/download_manifest.tsv)
+원래 후보 102개와 대상 조합 147개를 모두 보존해 다음과 같이 분류했습니다.
 
-이 결과는 **GWAS 변이와 유의한 eQTL이 겹치는 후보**입니다. 인과 유전자 확정이나 실제 자료의 공위치 분석 결과가 아닙니다. 논문의 전체 연관 신호 수와 Catalog에서 이번에 수집한 레코드 수는 다를 수 있습니다. 본 분석은 지정한 연구의 현재 Catalog 등록 자료를 사용합니다.
+|분류|유전자|유전자–조직 조합|
+|---|---:|---:|
+|A · 세 설정 모두에서 지지 · 자료 제한에 조건부|9|11|
+|B · 기본 설정에서 지지하지만 설정에 민감|9|12|
+|C · 큰 사전확률 설정에서만 지지|7|8|
+|D · 시험한 설정에서 기준 미충족|75|113|
+|E · 자료 부재로 분석 보류|2|3|
 
-## 후속 분석용 자료 확보
+세 설정에서 지지를 유지한 유전자는 **ACTR1B, LRP1, COLCA2, LMOD1, ATF1, COLCA1, LINC02044, MZF1-AS1, RP11-351I24.1**입니다. 유전자별 분류는 가장 강한 지지를 보이는 조직 조합을 요약하며, 조직별 posterior를 합산하지 않습니다.
 
-2026-09-23에 후속 분석용 **비유의 변이를 포함한 구간 요약통계**도 확보했습니다. GWAS 298,636행, eQTL 876,402행이며, **100개 유전자·144개 유전자–조직 조합**에 양쪽 자료가 있습니다. X염색체의 두 후보는 해당 GWAS 파일에 통계가 없어 별도 표시했습니다. 기존 153개 연관 대조와 오프라인 재현 검증을 통과했습니다. [확보 자료·검증 결과](docs/DATA_ACQUISITION.md)를 확인하세요.
+## 결과·발표 자료 찾아보기
 
-이어 **좌표·변이 ID·대립유전자 정렬과 중복/결측 QC**를 수행해 공통 통계 630,083행을 만들었습니다. 100개 유전자·144개 조합 모두 최소 공통 SNP 수를 충족했습니다. 제외한 lead SNP 4개와 X 구간 부재, 구간별 공유 비율은 [기준 정렬 결과](docs/DATA_HARMONIZATION.md)에 기록했습니다.
+|목적|자료|
+|---|---|
+|연구를 한눈에 보기|[한 장 요약 PNG](reports/overview/research_overview.png) · [PDF](reports/overview/research_overview.pdf)|
+|최종 결과와 해석 확인|[최종 보고서 Markdown](reports/final_report.md) · [HTML](reports/final_report.html)|
+|후보별 수치 확인|[전체 102개 유전자](results/final/candidates.tsv) · [147개 조합·효과 방향·제한](results/final/candidate_groups.tsv)|
+|공위치 분석 근거 확인|[방법·결과 문서](docs/COLOC_RESULTS.md) · [검색 가능한 HTML 보고서](reports/coloc_report.html)|
+|사전확률 민감도 보기|[우선 후보 11개 조합의 그림 PNG](reports/final_candidate_sensitivity.png) · [PDF](reports/final_candidate_sensitivity.pdf)|
+|처음 보는 사람에게 설명|[6쪽 소개 PDF](reports/introduction/research_intro.pdf) · [웹 문서](reports/introduction/research_intro.html) · [3분 설명문](reports/introduction/research_intro_script.md)|
+|발표 자료 활용|[연구 발표 PowerPoint](reports/presentation/GWAS_First_Lab_Presentation_CRC_completed.pptx)|
+|초기 중첩 탐색 확인|[초기 보고서](reports/public_report.html) · [변이별 근거표](results/public/variant_gene_evidence.tsv)|
 
-## 실제 자료 공위치 분석 완료
+GitHub에서는 Markdown·PNG·PDF를 바로 살펴볼 수 있습니다. HTML 보고서는 저장소를 내려받은 뒤 브라우저에서 열면 표 검색과 상대 경로 링크를 사용할 수 있습니다.
 
-2026-09-23에 **100개 유전자·144개 조합에 대해 사전확률 3개 설정, 총 432회 coloc**을 실행하고 별도 계산으로 전체 posterior를 검증했습니다. 기본 p12에서 18개 유전자·23개 조합이 PP.H4 ≥ 0.8을 충족했고, 시험한 세 설정 모두에서 기준을 유지한 것은 **9개 유전자·11개 조합**입니다.
+## 해석할 때 확인할 점
 
-[실제 coloc 결과 보고서](reports/coloc_report.html) · [방법·후보·검증·해석 제한](docs/COLOC_RESULTS.md)
+- **변이 관측 범위:** 분석한 144개 조합 중 137개에서 정제 구간의 최강 GWAS 변이가 공통 입력에 없습니다. 원본 점검에서 131개는 eQTL 원본에 위치가 없었고 6개는 해당 유전자의 cis 검사 범위 밖이었습니다. 점검 범위에서 처리 과정 누락은 발견되지 않았습니다.
+- **모델과 정렬 범위:** 구간은 lead ±500 kb를 합친 탐색적 거리 창입니다. LD·복수 신호를 모델링하지 않았으며, 모호한 A/T·C/G SNP와 indel을 제외했습니다. 원본의 극단적 효과크기 등 추정 품질도 후속 확인이 필요합니다.
+- **미분석과 재현의 구분:** X염색체 GWAS 자료가 없는 SHROOM2·GPR143의 3개 조합은 보류했습니다. 두 대장 조직은 기증자를 공유하므로 독립 재현으로 세지 않습니다.
+- **후보 선정의 범위:** 유의 변이·eQTL 중첩에서 출발한 후보 분석입니다. 등급 D는 생물학적 무관함을 뜻하지 않으며, PP.H4 기준은 전체 유전자 수준 FDR이나 발현의 인과적 매개 효과가 아닙니다.
 
-현재 공통 SNP 집합과 거리 구간에 조건부인 탐색적 결과입니다. 137개 조합에서 정제 GWAS의 최강 변이가 공통 표에 없으므로 coverage·원본 추정 품질·복수 신호를 후속 검토해야 합니다. 원인 유전자 확정 결과는 아닙니다.
+세부 근거는 [공위치 분석 해석](docs/COLOC_RESULTS.md), [전 단계 누락 점검](docs/PREVIOUS_STAGE_AUDIT.md), [미해결 항목](results/final/issue_ledger.tsv)에 있습니다. 후속 과제는 자료 관측 범위·원본 품질 보완, 집단에 적합한 LD·복수 신호 분석, 독립 자료 재현과 기능 검증입니다.
 
-## RStudio에서 시작
+## 실행 환경과 재분석
 
-`crc-gwas-eqtl.Rproj`를 열고 프로젝트 루트에서 실행합니다.
+모든 명령은 프로젝트 루트에서 실행합니다. 아래는 **Rscript가 PATH에 등록된 Windows PowerShell** 예시이며, Python 명령은 `py`를 사용합니다. RStudio에서도 환경 준비 후 `crc-gwas-eqtl.Rproj`를 열고 분석용 R 스크립트를 `source()`로 실행할 수 있습니다.
 
-```r
-source("scripts/setup.R")
-# 저장된 자료를 재분석: 네트워크가 필요하지 않습니다.
-source("scripts/02_analyze_public.R")
-```
+|구성|필요 조건|
+|---|---|
+|R 분석|R · `jsonlite`, `coloc`, `digest` · 기존 기록 환경은 R 4.6.1 / coloc 5.2.3|
+|Python 보고·검증|Python 3.11 이상 · 기본 보고·자료 처리 스크립트는 표준 라이브러리 사용|
+|한 장 요약 그림 생성|`matplotlib`, `numpy` · 맑은 고딕 등 생성 코드가 지원하는 한글 글꼴|
+|원본 자료 재수집|네트워크와 `curl.exe` · 기존 결과 열람·정제 자료 재분석에는 불필요|
 
-Windows PowerShell에서도 공개 자료 후보 탐색을 실행할 수 있습니다.
-
-공개 API 캐시를 읽어 초기 후보 탐색까지 재실행하려면 `Rscript run.R --offline`을 사용합니다. 이 실행기는 `01_fetch_public.R`과 `02_analyze_public.R`만 실행하며, 실제 공위치 분석·누락 점검·최종 보고서 생성은 포함하지 않습니다. 실제 공위치 분석은 아래 명령을, 최종 정리는 [최종 보고서 실행 안내](docs/FINAL_REPORT.md)를 따르세요.
-
-```powershell
-& 'C:\Program Files\R\R-4.6.1\bin\Rscript.exe' --vanilla scripts/setup.R --coloc
-& 'C:\Program Files\R\R-4.6.1\bin\Rscript.exe' --vanilla scripts/01_fetch_public.R --offline
-& 'C:\Program Files\R\R-4.6.1\bin\Rscript.exe' --vanilla scripts/02_analyze_public.R
-& 'C:\Program Files\R\R-4.6.1\bin\Rscript.exe' --vanilla scripts/03_run_demo.R
-& 'C:\Program Files\R\R-4.6.1\bin\Rscript.exe' --vanilla tests/run_tests.R
-```
-
-다른 컴퓨터에서는 설치된 `Rscript` 경로로 바꾸세요. Rscript가 PATH에 등록되어 있으면 `Rscript scripts/02_analyze_public.R`처럼 실행합니다. `--offline` 없이 수집 스크립트를 실행하면 **없는 캐시만** 내려받습니다. 기존 캐시는 덮어쓰지 않습니다. API 실패를 빈 결과로 처리하지 않습니다. 재분석 결과표는 같은 이름으로 갱신됩니다.
-
-기본 설정은 [config.R](config.R)에 있습니다. 패키지는 `.Rlib/`에 설치하며 이미 사용할 수 있는 패키지는 기존 R 라이브러리에서 이용합니다. 실제 버전은 `logs/package_versions.csv`와 각 단계의 `sessionInfo`에 기록합니다. 이는 실행 환경 기록이며 자동 버전 고정용 lockfile은 아닙니다. 한글 사용자 경로를 처리하기 위해 Windows에서는 bootstrap이 UTF-8 locale을 설정합니다.
-
-## 분석 구성
-
-1. **공개 자료 수집**: `GCST90129505`의 등록 연관 변이를 수집하고 p ≤ 5×10⁻⁸로 선별합니다. GTEx 공식 API로 rsID를 GRCh38 ref/alt 변이에 매핑합니다.
-2. **조직별 후보 탐색**: GTEx v8 `Colon_Transverse`, `Colon_Sigmoid`의 유의한 cis-eQTL과 직접 연결합니다. 버전을 명시해 API 기본 버전이 바뀌어도 혼합하지 않습니다. 모든 페이지를 수집합니다.
-3. **후보 정리**: 두 조직 관찰 여부 → 최소 eQTL p값 → 최소 GWAS p값 순으로 정렬합니다. 순서는 검토 편의를 위한 것이며 통계적 인과확률이나 검증된 종합점수가 아닙니다.
-4. **공위치 분석·검증**: 확보·정렬한 실제 구간 자료에 `coloc::coloc.abf`를 적용해 H0–H4와 p12 사전확률 민감도를 저장했습니다. 합성 자료의 공통·상이 피크 검증과 실제 432회 분석의 독립 posterior 검증을 수행했습니다. 후보 재정리와 누락 점검은 [최종 보고서](docs/FINAL_REPORT.md)에 기록했습니다.
-
-기존 후보 탐색 결과인 `results/public/`은 유의한 lead 변이와 유의 eQTL만 포함하므로 **coloc에 바로 넣을 수 없습니다**. `data/processed/acquisition/`에는 확보 원본을, `data/processed/harmonization/`에는 QC·정렬 결과를 저장합니다. 두 단계 모두 p값에 따른 유의성 선별을 하지 않았습니다. 공위치 분석 전에는 임시 구간과 coverage, 제외된 lead를 검토해야 합니다.
-
-## 실제 자료의 공위치 분석
-
-이미 확보·정렬한 실제 자료는 아래 명령으로 분석합니다. 결과와 해석 범위는 [실제 분석 문서](docs/COLOC_RESULTS.md)에 있습니다.
+### 1. 환경 준비
 
 ```powershell
-& 'C:\Program Files\R\R-4.6.1\bin\Rscript.exe' --vanilla scripts/05_run_real_coloc.R
+Rscript --vanilla scripts/setup.R --coloc
+Rscript --vanilla -e "source('R/bootstrap.R'); if (!requireNamespace('digest', quietly=TRUE)) install.packages('digest', lib=.libPaths()[1])"
+```
+
+`setup.R --coloc`는 `jsonlite`와 `coloc`를 준비하며, 두 번째 명령은 실제 자료 실행에 필요한 `digest`를 보완합니다. R 패키지는 프로젝트의 `.Rlib/`와 기존 라이브러리를 사용합니다. 버전은 `logs/package_versions.csv`와 실행별 `sessionInfo.txt`에 기록하지만 lockfile로 고정하지는 않습니다. 초기 설치에는 네트워크가 필요합니다.
+
+Rscript가 PATH에 없다면 설치된 경로로 바꾸어 실행하세요. 예: `& 'C:\Program Files\R\R-4.6.1\bin\Rscript.exe' --vanilla scripts/setup.R --coloc`.
+
+### 2. 저장된 자료로 초기 후보 탐색 재실행
+
+```powershell
+Rscript --vanilla run.R --offline
+```
+
+이 명령은 캐시를 읽는 `01_fetch_public.R`과 후보표를 만드는 `02_analyze_public.R`을 실행해 `results/public/`과 초기 보고서를 갱신합니다. 실제 공위치 분석이나 최종 보고서까지 실행하는 명령은 아닙니다. `--offline`을 빼면 없는 API 캐시만 내려받고 기존 캐시는 재사용합니다.
+
+### 3. 정제 구간 통계로 실제 공위치 분석 재실행
+
+```powershell
+Rscript --vanilla scripts/05_run_real_coloc.R
 py scripts/report_real_coloc.py
 ```
 
-별도의 사용자 제공 자료를 분석하려면 아래 입력 규격과 기존 실행기를 사용합니다.
+저장소에 포함한 `data/processed/acquisition/`과 `data/processed/harmonization/`의 정제 자료를 사용합니다. 필요한 패키지가 있으면 추가 다운로드 없이 실행할 수 있습니다. 첫 명령은 `results/coloc/<실행시각>_real/`에 새 실행을 저장하고, 두 번째 명령은 posterior를 독립 검증한 뒤 공위치 보고서를 갱신합니다. 실행 위치는 `results/coloc/latest_real_run.txt`에 기록됩니다. 최종 후보표·최종 보고서는 이 명령으로 자동 갱신되지 않으며, 아래의 별도 실행 안내를 따릅니다.
 
-[입력 자료 설명](docs/DATA_DICTIONARY.md)에 맞춰 아래 파일을 준비합니다.
+기본 연구·조직·기준은 [config.R](config.R)에 있습니다. 초기 유의 변이 중첩표인 `results/public/`은 공위치 분석 입력이 아닙니다. 별도 자료를 분석하려면 [입력 규격](docs/DATA_DICTIONARY.md)과 [metadata 예제](data/input/metadata.example.R)를 확인하고 `scripts/04_run_coloc.R`을 사용하세요.
 
-```text
-data/input/gwas.tsv
-data/input/eqtl.tsv
-data/input/metadata.R
-```
-
-`metadata.example.R`를 참고하여 자료 출처, 전체 구간 자료 여부, 대립유전자 방향 등을 기록한 뒤 실행합니다.
+### 4. 한 장 연구 요약 그림 다시 만들기
 
 ```powershell
-& 'C:\Program Files\R\R-4.6.1\bin\Rscript.exe' --vanilla scripts/04_run_coloc.R
+py -m pip install matplotlib numpy
+py scripts/plot_research_overview.py
 ```
 
-결과는 `results/coloc/<실행시각>/`에 저장됩니다. `results/demo/`는 모두 **합성 자료 결과**이며 실제 후보표에 포함하지 않습니다.
+보존된 최종 후보표를 읽어 `reports/overview/research_overview.png`와 PDF를 갱신합니다. 공위치 분석을 새로 수행하는 명령은 아닙니다.
 
-## 폴더
+### 5. 그 밖의 재현·검증
+
+|작업|실행 안내|
+|---|---|
+|원본 구간 자료·발현 SD 재수집|[자료 확보](docs/DATA_ACQUISITION.md)|
+|QC·대립유전자 정렬 재생성|[기준 정렬](docs/DATA_HARMONIZATION.md)|
+|원본 누락 점검·최종 보고서 재생성|[최종 보고서 실행 순서](docs/FINAL_REPORT.md)|
+|R 입력·정렬 점검|`Rscript --vanilla tests/run_tests.R`|
+|Python 단위 테스트|`py -m unittest discover -s tests -p 'test_*.py'`|
+
+새로 복제한 저장소에는 대용량 원본 캐시 `data/raw/summary_statistics/`와 비압축 `results/coloc/*/harmonized.tsv`가 없습니다. 정제 자료를 이용한 위 재분석은 가능하지만, **원본 누락 감사와 기존 전체 해시 검증에는 제외 파일의 복구·재생성이 필요**합니다. 구간 원본·발현 자료의 오프라인 수집은 해당 원본 캐시가 이미 있을 때만 가능합니다. `results/demo/`는 합성 자료 결과이며 실제 후보표에 포함하지 않습니다.
+
+## 저장소 구성
 
 |경로|내용|
 |---|---|
-|`R/`|API·입출력·QC·대립유전자 정렬·coloc 함수|
-|`scripts/`|설치, 수집, 실제 공개 자료 분석, 예제, 사용자 자료 분석|
-|`data/raw/`|공개 API 원본 JSON, URL·수집시각|
-|`data/processed/`|정리한 공개 자료, 매핑, 다운로드 체크섬|
-|`data/input/`|사용자 구간 요약통계 입력|
-|`results/public/`|실제 공개 자료 후보표·그림|
-|`results/demo/`|합성 자료 공위치 분석·민감도·QC|
-|`reports/`|한국어 HTML 보고서|
-|`docs/`|연구 설계·자료 사전·출처|
-|`tests/`|분석 오류 방지 점검|
+|`R/`, `config.R`, `run.R`|공통 함수, 분석 설정, 초기 탐색 실행기|
+|`scripts/`|자료 수집·정렬·분석·검증·보고서와 그림 생성|
+|`data/raw/`|공개 API 캐시와 출처 기록 · 대용량 구간 캐시는 제외|
+|`data/processed/`|후보 탐색 자료, 구간 통계, 정렬 결과와 체크섬|
+|`data/input/`|사용자 구간 요약통계 입력 위치와 metadata 예제|
+|`results/public/`, `results/coloc/`, `results/final/`|초기 후보, 실제 공위치 실행, 최종 후보·감사 기록|
+|`reports/`|최종 보고서, 연구 요약 그림, 소개 자료와 발표 자료|
+|`docs/`, `tests/`, `logs/`|방법·출처·실행 문서, 오류 방지 점검, 실행 환경 기록|
 
-자세한 해석과 후속 연구는 [연구 설계](docs/ANALYSIS_PLAN.md), 원문 및 데이터 링크는 [자료 출처](docs/SOURCES.md)에 정리했습니다.
-
-## GitHub 공개 범위
-
-저장소에는 분석 코드, 설정, 테스트, 문서, 보고서, 발표 자료, 최종 후보표와 재현에 필요한 기록을 포함합니다. 공개 원자료를 내려받아 만든 `data/raw/summary_statistics/` 캐시와 GitHub의 단일 파일 제한을 넘는 `results/coloc/*/harmonized.tsv`는 커밋하지 않습니다. 원자료 URL·체크섬·수집 방법은 문서와 manifest에 남아 있고, 같은 정렬 입력의 압축본은 `data/processed/harmonization/shared.aligned.tsv.gz`에 보존합니다. 자세한 목록은 [GitHub 게시 기록](docs/GITHUB_PUBLICATION.md)에 있습니다.
+코드·보고서·후보표·재현 기록을 공개하며, 대용량 원본의 출처와 체크섬은 보존합니다. 포함·제외 파일과 복구 경로는 [GitHub 공개 범위](docs/GITHUB_PUBLICATION.md), 연구 설계와 후속 과제는 [분석 계획](docs/ANALYSIS_PLAN.md)에 정리했습니다.
