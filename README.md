@@ -1,12 +1,28 @@
 # 대장암 GWAS·eQTL 기반 유전자 후보 탐색
 
-공개 대장암 GWAS와 대장 조직 eQTL을 연결해 **후속 기능 검증을 위한 후보 유전자**를 찾는 R·Python 연구 프로젝트입니다. 공위치 분석(colocalization)으로 두 연관 신호가 원인 변이를 공유한다는 가설을 평가하고, 사전확률을 바꾸어 후보 지지의 안정성을 확인했습니다.
+**공개 유전체 자료를 수집·정렬하고, 통계 결과를 독립 계산으로 검증한 R·Python 분석 프로젝트입니다.**
 
-**현재 상태:** 2026-09-23 기준 실제 자료 분석, 누락 점검, 후보 재분류와 최종 보고서 작성을 완료했습니다. 102개 초기 후보 중 100개를 분석했으며, **9개 유전자·11개 유전자–조직 조합**이 시험한 세 사전확률 설정 모두에서 기준을 유지했습니다. 현재 자료와 모델에 조건부인 탐색적 결과이며, 원인 유전자 확정이나 기능 실험 완료를 의미하지 않습니다.
+대장암 GWAS와 대장 조직 eQTL의 신호가 원인 변이를 공유하는지 `coloc`으로 평가했습니다. 자료 확보부터 QC·대립유전자 정렬, 사전확률 민감도 분석, 누락 원본 대조, 최종 후보표·보고서 작성까지 연결했습니다.
+
+| 분석 규모 | 결과 검증 | 후속 검토 후보 |
+|---|---|---|
+| **100개 유전자 · 144개 조합** | **432회 분석을 별도 Python 계산으로 대조** | **9개 유전자 · 11개 조합** |
+| 초기 후보 102개·147개 조합을 모두 추적 | posterior 최대 절대 차이 약 **5×10⁻¹⁶** | 시험한 세 사전확률 모두에서 PP.H4 ≥ 0.8 |
+
+**분석 기준일: 2026-09-23.** 후보는 현재 자료·모델에 조건부인 탐색적 결과입니다. 144개 분석 조합 중 137개에서 정제 구간의 최강 GWAS 변이가 공통 입력에 없어 해석 범위를 제한했습니다. 원인 유전자 확정이나 독립·기능 검증을 의미하지 않습니다.
+
+[최종 보고서](reports/final_report.md) · [한 장 요약 PDF](reports/overview/research_overview.pdf) · [전체 후보표](results/final/candidates.tsv) · [재분석 안내](#실행-환경과-재분석)
 
 ![공개자료 연결부터 후보 분류·조직별 지지·해석 제한까지 정리한 연구 요약](reports/overview/research_overview.png)
 
-[요약 PDF](reports/overview/research_overview.pdf) · [최종 보고서](reports/final_report.md) · [6쪽 소개 자료](reports/introduction/research_intro.pdf) · [전체 후보표](results/final/candidates.tsv)
+## 핵심 작업과 확인 근거
+
+| 작업 | 구현·확인 내용 | 근거 |
+|---|---|---|
+| 공개 자료 수집 | GWAS·GTEx 구간 통계 확보, 출처·자료 가용성 기록 | [수집 코드](scripts/acquire_regional_sumstats.py) · [확보 기록](docs/DATA_ACQUISITION.md) |
+| 분석 입력 정렬 | 좌표·대립유전자 정렬, 중복·결측 QC, 공통 입력 구성 | [정렬 코드](scripts/harmonize_regional_sumstats.py) · [QC·정렬 기준](docs/DATA_HARMONIZATION.md) |
+| 통계 분석·독립 검증 | `coloc` 3개 prior 설정과 Python ABF·H0–H4 재계산 | [R 실행 코드](scripts/05_run_real_coloc.R) · [Python 검증 코드](scripts/report_real_coloc.py) · [검증 수치](results/final/final_summary.json) |
+| 후보 추적·보고 | 미분석 후보도 보존, 원본 누락 대조, 후보별 제한과 보고서 기록 | [최종 후보표](results/final/candidates.tsv) · [누락 점검](docs/PREVIOUS_STAGE_AUDIT.md) · [최종 검증 기록](results/final/final_validation.json) |
 
 ## 연구 질문과 자료
 
@@ -82,6 +98,9 @@ GitHub에서는 Markdown·PNG·PDF를 바로 살펴볼 수 있습니다. HTML �
 |한 장 요약 그림 생성|`matplotlib`, `numpy` · 맑은 고딕 등 생성 코드가 지원하는 한글 글꼴|
 |원본 자료 재수집|네트워크와 `curl.exe` · 기존 결과 열람·정제 자료 재분석에는 불필요|
 
+<details>
+<summary>환경 설치와 단계별 재분석 명령 펼치기</summary>
+
 ### 1. 환경 준비
 
 ```powershell
@@ -133,6 +152,8 @@ py scripts/plot_research_overview.py
 
 새로 복제한 저장소에는 대용량 원본 캐시 `data/raw/summary_statistics/`와 비압축 `results/coloc/*/harmonized.tsv`가 없습니다. 정제 자료를 이용한 위 재분석은 가능하지만, **원본 누락 감사와 기존 전체 해시 검증에는 제외 파일의 복구·재생성이 필요**합니다. 구간 원본·발현 자료의 오프라인 수집은 해당 원본 캐시가 이미 있을 때만 가능합니다. `results/demo/`는 합성 자료 결과이며 실제 후보표에 포함하지 않습니다.
 
+</details>
+
 ## 저장소 구성
 
 |경로|내용|
@@ -147,3 +168,4 @@ py scripts/plot_research_overview.py
 |`docs/`, `tests/`, `logs/`|방법·출처·실행 문서, 오류 방지 점검, 실행 환경 기록|
 
 코드·보고서·후보표·재현 기록을 공개하며, 대용량 원본의 출처와 체크섬은 보존합니다. 포함·제외 파일과 복구 경로는 [GitHub 공개 범위](docs/GITHUB_PUBLICATION.md), 연구 설계와 후속 과제는 [분석 계획](docs/ANALYSIS_PLAN.md)에 정리했습니다.
+
