@@ -7,6 +7,7 @@ R로 공개 대장암 GWAS 변이와 대장 조직 eQTL을 연결하고, 확보�
 2026-09-23에 **앞 단계 누락 점검과 후보 재정리·최종 보고서 작성**까지 완료했습니다. 점검한 누락은 사용한 원본의 부재·cis 범위·의도적 QC 제외로 확인됐으며, 확인 범위에서 처리 과정 누락이나 복구 행은 없었습니다. 원래 후보 102개를 모두 유지해 prior 지지가 안정적인 조건부 후보 9개, 기본 prior 지지·민감 후보 9개, 큰 prior에서만 지지 7개, 기준 미충족 75개, 자료 부재 보류 2개로 정리했습니다.
 
 - **[최종 보고서](reports/final_report.html)** · [Markdown](reports/final_report.md)
+- **[한 장 연구 요약 그림](reports/overview/research_overview.png)** · [발표·인쇄용 PDF](reports/overview/research_overview.pdf) · [그림 생성 코드](scripts/plot_research_overview.py)
 - **[처음 보는 사람을 위한 6쪽 소개 자료](reports/introduction/research_intro.pdf)** · [웹 문서](reports/introduction/research_intro.html) · [3분 발표 설명문](reports/introduction/research_intro_script.md)
 - [전 단계 누락 점검](docs/PREVIOUS_STAGE_AUDIT.md)
 - [전체 후보 102개](results/final/candidates.tsv) · [조합별 147개 결과·효과 방향·제한](results/final/candidate_groups.tsv)
