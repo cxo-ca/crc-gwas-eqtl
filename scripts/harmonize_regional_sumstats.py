@@ -76,7 +76,7 @@ def reasons(row, kind):
                 good &= math.isfinite(value * value) and value * value > 0
             if name == 'p':
                 good &= 0 < value <= 1
-        except (ValueError, OverflowError):
+        except (TypeError, ValueError, OverflowError):
             good = False
         if not good:
             result.append('invalid_' + name)

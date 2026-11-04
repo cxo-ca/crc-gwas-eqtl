@@ -41,6 +41,14 @@ class HarmonizationTests(unittest.TestCase):
         self.assertIn('unharmonized_gwas', reasons(row(hm_code='15'), 'gwas'))
         self.assertEqual(reasons(row(p='1'), 'gwas'), [])  # no significance filtering
 
+    def test_missing_numeric_values_are_excluded(self):
+        # DictReader represents missing trailing TSV fields as None.
+        for kind in ('gwas', 'eqtl'):
+            fields = ('beta', 'se', 'p', 'sdY') if kind == 'eqtl' else ('beta', 'se', 'p')
+            for field in fields:
+                with self.subTest(kind=kind, field=field):
+                    self.assertEqual(reasons(row(**{field: None}), kind), ['invalid_' + field])
+
     def test_alias_duplicates_preserve_ids(self):
         kept, removed = deduplicate([row(), row(source_rsid='rs2', source_row=2)], 'eqtl')
         self.assertEqual(len(kept), 1)
