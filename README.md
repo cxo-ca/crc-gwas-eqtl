@@ -98,7 +98,7 @@ GitHub에서는 Markdown·PNG·PDF를 바로 살펴볼 수 있습니다. HTML �
 |한 장 요약 그림 생성|`matplotlib`, `numpy` · 맑은 고딕 등 생성 코드가 지원하는 한글 글꼴|
 |원본 자료 재수집|네트워크와 `curl.exe` · 기존 결과 열람·정제 자료 재분석에는 불필요|
 
-GitHub Actions의 [Python 단위 테스트](.github/workflows/python-tests.yml)는 `main` 푸시, PR, 수동 실행 시 Ubuntu의 Python 3.11·3.14에서 오프라인 테스트를 수행합니다. 테스트는 표준 라이브러리와 합성 자료를 사용하며 원본 자료를 내려받지 않습니다. R·`coloc` 실행과 전체 연구 재현은 아래 명령으로 별도 확인합니다.
+GitHub Actions는 `main` 푸시, PR, 수동 실행 시 합성 자료로 두 가지 검사를 수행합니다. [Python 단위 테스트](.github/workflows/python-tests.yml)는 Ubuntu의 Python 3.11·3.14에서 실행하고, [R 입력·정렬 검사](.github/workflows/r-tests.yml)는 Ubuntu의 R 4.6.1에서 입력값과 대립유전자 정렬을 확인합니다. 로컬에서 `coloc`를 설치한 뒤 같은 R 테스트 명령을 실행하면 공위치 분석 입력의 전체 구간과 유전체 빌드 검사도 수행합니다.
 
 <details>
 <summary>환경 설치와 단계별 재분석 명령 펼치기</summary>
