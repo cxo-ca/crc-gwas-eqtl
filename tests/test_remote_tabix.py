@@ -307,6 +307,46 @@ class RemoteTabixTests(unittest.TestCase):
         self.assertEqual(validate_range_response(
             b"HTTP/2 206\r\nContent-Range: bytes 0-2/3\r\n\r\n", b"abc", 0, 65535), (2, 3))
 
+    def test_content_length_validation(self):
+        header = b"HTTP/2 206\r\nContent-Range: bytes 0-2/3\r\nContent-Length: "
+        invalid = (b"", b"abc", b"+3", b"-3", b"0_3", b"3.0", b"3, 3",
+                   b"\xb3", b"0", b"2", b"4", b"9" * 5000)
+        for length in invalid:
+            with self.subTest(length=length[:20]):
+                with self.assertRaisesRegex(RemoteTabixError, "Content-Length"):
+                    validate_range_response(header + length + b"\r\n\r\n", b"abc", 0, 2)
+        for length in (b"3", b"0003", b"0" * 5000 + b"3"):
+            with self.subTest(valid_length=length[:20]):
+                self.assertEqual(validate_range_response(
+                    header + length + b"\r\n\r\n", b"abc", 0, 2), (2, 3))
+
+    def test_invalid_content_length_retries_without_caching(self):
+        from unittest.mock import patch
+        header = b"HTTP/2 206\r\nContent-Range: bytes 0-2/3\r\nContent-Length: "
+        valid = header + b"3\r\n\r\n"
+        for length in (b"bad", b"2"):
+            with self.subTest(length=length), tempfile.TemporaryDirectory() as directory:
+                source = RemoteTabix(URL, directory, retries=2)
+                invalid = header + length + b"\r\n\r\n"
+                with patch.object(source, "_request", return_value=(invalid, b"abc")) as request, \
+                        patch("lib_remote_tabix.time.sleep") as sleep:
+                    with self.assertRaisesRegex(RemoteTabixError, "Failed after 2 range attempts"):
+                        source._download(URL, 0, 2)
+                    self.assertEqual(request.call_count, 2)
+                    sleep.assert_called_once_with(1)
+                self.assertEqual(source.manifest["ranges"], [])
+                self.assertEqual(source.manifest["totals"], {})
+                self.assertEqual(list(source.cache_dir.iterdir()), [])
+                with patch.object(source, "_request", side_effect=[
+                        (invalid, b"abc"), (valid, b"abc")]) as request, \
+                        patch("lib_remote_tabix.time.sleep") as sleep:
+                    entry = source._download(URL, 0, 2)
+                    self.assertEqual(request.call_count, 2)
+                    sleep.assert_called_once_with(1)
+                self.assertEqual(len(source.manifest["ranges"]), 1)
+                self.assertEqual(source._cached_bytes(entry), b"abc")
+                self.assertEqual((source.cache_dir / entry["headers"]).read_bytes(), valid)
+
     def test_bgzf_crc_member_boundaries_and_virtual_ends(self):
         one, two = bgzf(b"first\n"), bgzf(b"second\n")
         self.assertEqual(list(bgzf_blocks(one + two)), [(0, b"first\n"), (len(one), b"second\n")])
