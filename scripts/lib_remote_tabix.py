@@ -206,8 +206,12 @@ def validate_range_response(headers: bytes, body: bytes, start: int, end: int) -
         raise RemoteTabixError("Content-Range or body length does not match requested bytes")
     if fields.get(b"content-encoding", b"identity").lower() not in (b"identity", b""):
         raise RemoteTabixError("Content-Encoding changed the BGZF byte offsets")
-    if b"content-length" in fields and int(fields[b"content-length"]) != len(body):
-        raise RemoteTabixError("Content-Length does not match downloaded range")
+    length = fields.get(b"content-length")
+    if length is not None:
+        if not length.isdigit():
+            raise RemoteTabixError("Invalid Content-Length")
+        if (length.lstrip(b"0") or b"0") != str(len(body)).encode("ascii"):
+            raise RemoteTabixError("Content-Length does not match downloaded range")
     return actual_end, total
 
 
