@@ -87,8 +87,12 @@ def checked_content_range(raw_headers: str, start: int, end: int) -> tuple[int, 
         raise ValueError(f"Content-Range does not match requested bytes {start}-{end}")
     if headers.get("content-encoding", "identity").lower() != "identity":
         raise ValueError("Unexpected content encoding would invalidate byte offsets")
-    if "content-length" in headers and int(headers["content-length"]) != end - start + 1:
-        raise ValueError("Content-Length does not match requested range")
+    length = headers.get("content-length")
+    if length is not None:
+        if not re.fullmatch(r"[0-9]+", length):
+            raise ValueError("Invalid Content-Length")
+        if (length.lstrip("0") or "0") != str(end - start + 1):
+            raise ValueError("Content-Length does not match requested range")
     return total, headers
 
 
