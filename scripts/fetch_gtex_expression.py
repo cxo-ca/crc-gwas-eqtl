@@ -115,7 +115,8 @@ class RangeCache:
         body = self.directory / (prefix + ".bin")
         headers_file = self.directory / (prefix + ".headers.txt")
         record_file = self.directory / (prefix + ".json")
-        if record_file.exists():
+        cached = record_file.exists()
+        if cached:
             record = json.loads(record_file.read_text(encoding="utf-8"))
             if record["url"] != self.url or record["start"] != start or record["end"] != end:
                 raise ValueError(f"Cached provenance mismatch: {record_file}")
@@ -152,14 +153,15 @@ class RangeCache:
                 "sha256": sha256_file(temporary), "headers_sha256": sha256_file(temporary_headers),
                 "data_file": str(body.resolve()), "headers_file": str(headers_file.resolve()),
             }
-            temporary.replace(body)
-            temporary_headers.replace(headers_file)
-            write_json(record_file, record)
         if self.total_size is not None and self.total_size != total:
             raise ValueError("Source archive size changed between range requests")
         current_etag = headers.get("etag")
         if self.etag is not None and self.etag != current_etag:
             raise ValueError("Source archive ETag changed between range requests")
+        if not cached:
+            temporary.replace(body)
+            temporary_headers.replace(headers_file)
+            write_json(record_file, record)
         self.total_size = total
         self.etag = current_etag
         self.used.append({**record, "record_file": str(record_file.resolve())})
