@@ -105,6 +105,7 @@ class RangeCache:
         self.curl = curl
         self.total_size: int | None = None
         self.etag: str | None = None
+        self.last_modified: str | None = None
         self.used: list[dict] = []
 
     def get(self, start: int, length: int, purpose: str) -> Path:
@@ -158,12 +159,17 @@ class RangeCache:
         current_etag = headers.get("etag")
         if self.etag is not None and self.etag != current_etag:
             raise ValueError("Source archive ETag changed between range requests")
+        current_last_modified = headers.get("last-modified")
+        if (self.last_modified is not None
+                and self.last_modified != current_last_modified):
+            raise ValueError("Source archive Last-Modified changed between range requests")
         if not cached:
             temporary.replace(body)
             temporary_headers.replace(headers_file)
             write_json(record_file, record)
         self.total_size = total
         self.etag = current_etag
+        self.last_modified = current_last_modified
         self.used.append({**record, "record_file": str(record_file.resolve())})
         return body
 

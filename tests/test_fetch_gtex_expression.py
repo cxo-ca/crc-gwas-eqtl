@@ -30,7 +30,7 @@ class MemoryRanges:
         return path
 
 
-def range_download(total, etag):
+def range_download(total, etag, last_modified=None):
     """Mock curl responses for a seven-byte synthetic expression archive."""
     def download(command, **kwargs):
         start, end = map(int, command[command.index("--range") + 1].split("-"))
@@ -39,6 +39,8 @@ def range_download(total, etag):
                    f"Content-Length: {len(body)}\r\n")
         if etag is not None:
             headers += f"ETag: {etag}\r\n"
+        if last_modified is not None:
+            headers += f"Last-Modified: {last_modified}\r\n"
         Path(command[command.index("--output") + 1]).write_bytes(body)
         Path(command[command.index("--dump-header") + 1]).write_bytes(
             (headers + "\r\n").encode("ascii"))
@@ -152,26 +154,32 @@ class ExpressionAcquisitionTests(unittest.TestCase):
     def test_source_changes_are_rejected_before_cache_commit(self):
         from unittest.mock import patch
         url, original_etag = "https://example.invalid/expression.tar", '"fixture-v1"'
-        changes = ((7, original_etag, "size changed"),
-                   (6, '"fixture-v2"', "ETag changed"), (6, None, "ETag changed"))
-        for total, etag, message in changes:
-            with self.subTest(total=total, etag=etag), \
+        original_modified = "Tue, 22 Sep 2026 00:00:00 GMT"
+        changed_modified = "Wed, 23 Sep 2026 00:00:00 GMT"
+        changes = ((original_etag, 7, original_etag, original_modified, "size changed"),
+                   (original_etag, 6, '"fixture-v2"', original_modified, "ETag changed"),
+                   (original_etag, 6, None, original_modified, "ETag changed"),
+                   (None, 6, None, changed_modified, "Last-Modified changed"),
+                   (None, 6, None, None, "Last-Modified changed"))
+        for accepted_etag, total, etag, last_modified, message in changes:
+            with self.subTest(total=total, etag=etag, last_modified=last_modified), \
                     tempfile.TemporaryDirectory(dir=TEST_DIRECTORY) as temporary:
                 directory = Path(temporary)
                 cache = fetch.RangeCache(url, directory, offline=False, curl="curl.exe")
-                with patch.object(fetch.subprocess, "run", side_effect=range_download(6, original_etag)):
+                with patch.object(fetch.subprocess, "run", side_effect=range_download(6, accepted_etag, original_modified)):
                     self.assertEqual(cache.get(0, 3, "first").read_bytes(), b"abc")
                 committed = {path.name: path.read_bytes() for path in directory.iterdir()}
                 accepted = list(cache.used)
-                with patch.object(fetch.subprocess, "run", side_effect=range_download(total, etag)):
+                with patch.object(fetch.subprocess, "run", side_effect=range_download(total, etag, last_modified)):
                     with self.assertRaisesRegex(ValueError, message):
                         cache.get(3, 3, "changed")
                 self.assertEqual(len(list(directory.glob("*.json"))), 1)
                 self.assertEqual({path.name: path.read_bytes() for path in directory.iterdir()
                                   if not path.name.endswith(".part")}, committed)
-                self.assertEqual((cache.total_size, cache.etag), (6, original_etag))
+                self.assertEqual((cache.total_size, cache.etag, cache.last_modified),
+                                 (6, accepted_etag, original_modified))
                 self.assertEqual(cache.used, accepted)
-                with patch.object(fetch.subprocess, "run", side_effect=range_download(6, original_etag)):
+                with patch.object(fetch.subprocess, "run", side_effect=range_download(6, accepted_etag, original_modified)):
                     self.assertEqual(cache.get(3, 3, "recovered").read_bytes(), b"def")
                 self.assertEqual(len(cache.used), 2)
                 offline = fetch.RangeCache(url, directory, offline=True, curl="curl.exe")
@@ -183,17 +191,22 @@ class ExpressionAcquisitionTests(unittest.TestCase):
     def test_offline_source_changes_preserve_accepted_state(self):
         from unittest.mock import patch
         url, original_etag = "https://example.invalid/expression.tar", '"fixture-v1"'
-        changes = ((7, original_etag, "size changed"),
-                   (6, '"fixture-v2"', "ETag changed"), (6, None, "ETag changed"))
-        for total, etag, message in changes:
-            with self.subTest(total=total, etag=etag), \
+        original_modified = "Tue, 22 Sep 2026 00:00:00 GMT"
+        changed_modified = "Wed, 23 Sep 2026 00:00:00 GMT"
+        changes = ((original_etag, 7, original_etag, original_modified, "size changed"),
+                   (original_etag, 6, '"fixture-v2"', original_modified, "ETag changed"),
+                   (original_etag, 6, None, original_modified, "ETag changed"),
+                   (None, 6, None, changed_modified, "Last-Modified changed"),
+                   (None, 6, None, None, "Last-Modified changed"))
+        for accepted_etag, total, etag, last_modified, message in changes:
+            with self.subTest(total=total, etag=etag, last_modified=last_modified), \
                     tempfile.TemporaryDirectory(dir=TEST_DIRECTORY) as temporary:
                 directory = Path(temporary)
                 first = fetch.RangeCache(url, directory, offline=False, curl="curl.exe")
-                with patch.object(fetch.subprocess, "run", side_effect=range_download(6, original_etag)):
+                with patch.object(fetch.subprocess, "run", side_effect=range_download(6, accepted_etag, original_modified)):
                     first.get(0, 3, "first")
                 second = fetch.RangeCache(url, directory, offline=False, curl="curl.exe")
-                with patch.object(fetch.subprocess, "run", side_effect=range_download(total, etag)):
+                with patch.object(fetch.subprocess, "run", side_effect=range_download(total, etag, last_modified)):
                     second.get(3, 3, "different source")
                 committed = {path.name: path.read_bytes() for path in directory.iterdir()}
                 offline = fetch.RangeCache(url, directory, offline=True, curl="curl.exe")
@@ -202,7 +215,8 @@ class ExpressionAcquisitionTests(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, message):
                         offline.get(3, 3, "changed")
                     request.assert_not_called()
-                self.assertEqual((offline.total_size, offline.etag), (6, original_etag))
+                self.assertEqual((offline.total_size, offline.etag, offline.last_modified),
+                                 (6, accepted_etag, original_modified))
                 self.assertEqual(len(offline.used), 1)
                 self.assertEqual({path.name: path.read_bytes() for path in directory.iterdir()}, committed)
 
