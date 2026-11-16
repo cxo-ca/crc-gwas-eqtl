@@ -272,11 +272,12 @@ class RemoteTabix:
     def references(self) -> tuple[str, ...]:
         return self.index.names
 
-    def _save(self):
+    def _save(self, manifest: dict | None = None):
         if not self.offline:
             with self._lock:
+                snapshot = self.manifest if manifest is None else manifest
                 temp = self.manifest_path.with_suffix(".json.tmp")
-                temp.write_text(json.dumps(self.manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                temp.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
                 temp.replace(self.manifest_path)
 
     def _request(self, url: str, start: int, end: int) -> tuple[bytes, bytes]:
@@ -315,7 +316,7 @@ class RemoteTabix:
                          "headers": key + ".headers", "headers_sha256": _sha(headers),
                          "downloaded_utc": datetime.now(timezone.utc).isoformat()}
                 with self._lock:
-                    self._check_validators(url, headers)
+                    validators = self._check_validators(url, headers)
                     known = self.manifest["totals"].get(url)
                     if known is not None and known != total:
                         raise RemoteTabixError("Remote file size changed within cached acquisition")
@@ -323,10 +324,13 @@ class RemoteTabix:
                         temporary = self.cache_dir / (name + ".tmp")
                         temporary.write_bytes(content)
                         temporary.replace(self.cache_dir / name)
-                    self.manifest["ranges"] = [x for x in self.manifest["ranges"] if x['file'] != filename]
-                    self.manifest["ranges"].append(entry)
-                    self.manifest["totals"][url] = total
-                    self._save()
+                    candidate = dict(self.manifest)
+                    candidate["ranges"] = [x for x in self.manifest["ranges"] if x['file'] != filename] + [entry]
+                    candidate["totals"] = {**self.manifest["totals"], url: total}
+                    candidate["validators"] = dict(self.manifest.get("validators", {}))
+                    candidate["validators"].setdefault(url, validators)
+                    self._save(candidate)
+                    self.manifest = candidate
                 return entry
             except (RemoteTabixError, OSError, subprocess.TimeoutExpired) as exc:
                 last_error = exc
@@ -334,17 +338,17 @@ class RemoteTabix:
                     time.sleep(min(2 ** attempt, 8))
         raise RemoteTabixError(f"Failed after {self.retries} range attempts: {last_error}") from last_error
 
-    def _check_validators(self, url: str, headers: bytes):
+    def _check_validators(self, url: str, headers: bytes) -> dict[str, str]:
+        """Validate source identity without learning from an uncommitted response."""
         _, fields = _response_fields(headers)
         values = {key.decode(): fields[key].decode("latin-1")
                   for key in (b"etag", b"last-modified") if key in fields}
-        known = self.manifest.setdefault("validators", {}).get(url)
+        known = self.manifest.get("validators", {}).get(url)
         if known is not None:
             for key, value in known.items():
                 if values.get(key) != value:
                     raise RemoteTabixError(f"Remote {key} changed or disappeared within cached acquisition")
-        else:
-            self.manifest["validators"][url] = values
+        return values
 
     def _cached_bytes(self, entry: dict) -> bytes:
         name = entry["file"]
@@ -358,7 +362,9 @@ class RemoteTabix:
             last, total = validate_range_response(headers, data, entry["requested_start"], entry["requested_end"])
             if last != entry["end"] or total != entry["total"] or total != self.manifest["totals"][entry["url"]]:
                 raise RemoteTabixError("Cached range metadata disagrees with its HTTP response")
-            self._check_validators(entry["url"], headers)
+            with self._lock:
+                validators = self._check_validators(entry["url"], headers)
+                self.manifest.setdefault("validators", {}).setdefault(entry["url"], validators)
             self._verified[name] = data
             # Keep decompressed extraction streaming; compressed memory is bounded.
             while sum(map(len, self._verified.values())) > 2 * self.max_span_bytes and len(self._verified) > 1:

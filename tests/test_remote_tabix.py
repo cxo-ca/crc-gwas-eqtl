@@ -218,6 +218,101 @@ class RemoteTabixTests(unittest.TestCase):
                 self.assertEqual(source.references, ("chr1", "chr2"))
             self.assertEqual(len(source.manifest["ranges"]), 1)
 
+    def test_failed_first_range_does_not_pin_source(self):
+        from unittest.mock import patch
+        for stage in ("body", "headers", "manifest"):
+            with self.subTest(stage=stage), tempfile.TemporaryDirectory() as directory:
+                source = MemoryRemote(directory, {URL: b"abcdef"})
+                initial = json.loads(json.dumps(source.manifest))
+                write_bytes = Path.write_bytes
+
+                def fail_write(path, data):
+                    suffix = ".bin.tmp" if stage == "body" else ".headers.tmp"
+                    if path.name.endswith(suffix):
+                        raise OSError("simulated cache write failure")
+                    return write_bytes(path, data)
+
+                if stage == "manifest":
+                    failure = patch.object(source, "_save", side_effect=OSError("simulated manifest failure"))
+                else:
+                    failure = patch.object(Path, "write_bytes", new=fail_write)
+                with failure:
+                    with self.assertRaisesRegex(RemoteTabixError, "Failed after 1 range attempts"):
+                        source._read_range(URL, 0, 2)
+                self.assertEqual(source.manifest, initial)
+                self.assertFalse(source.manifest_path.exists())
+                source.etag = '"fixture-v2"'
+                self.assertEqual(source._read_range(URL, 0, 2), b"abc")
+                self.assertEqual(source.manifest["validators"][URL]["etag"], source.etag)
+                self.assertEqual(len(source.manifest["ranges"]), 1)
+                offline = RemoteTabix(URL, directory, offline=True)
+                self.assertEqual(offline._read_range(URL, 0, 2), b"abc")
+
+    def test_failed_manifest_preserves_prior_ranges(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            source = MemoryRemote(directory, {URL: b"abcdef"})
+            self.assertEqual(source._read_range(URL, 0, 2), b"abc")
+            initial = json.loads(json.dumps(source.manifest))
+            manifest_bytes = source.manifest_path.read_bytes()
+            with patch.object(source, "_save", side_effect=OSError("simulated manifest failure")):
+                with self.assertRaisesRegex(RemoteTabixError, "Failed after 1 range attempts"):
+                    source._read_range(URL, 3, 5)
+            self.assertEqual(source.manifest, initial)
+            self.assertEqual(source.manifest_path.read_bytes(), manifest_bytes)
+            offline = RemoteTabix(URL, directory, offline=True)
+            self.assertEqual(offline._read_range(URL, 0, 2), b"abc")
+            self.assertEqual(source._read_range(URL, 3, 5), b"def")
+            self.assertEqual(sum(start == 3 for _, start, _ in source.requests), 2)
+            self.assertEqual(len(source.manifest["ranges"]), 2)
+            self.assertEqual(json.loads(source.manifest_path.read_text()), source.manifest)
+            offline = RemoteTabix(URL, directory, offline=True)
+            self.assertEqual(offline._read_range(URL, 0, 5), b"abcdef")
+
+    def test_legacy_cache_learns_only_accepted_validators(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = MemoryRemote(directory, {URL: b"abcdef"})
+            self.assertEqual(source._read_range(URL, 0, 2), b"abc")
+            legacy = json.loads(json.dumps(source.manifest))
+            del legacy["validators"]
+            source.manifest_path.write_text(json.dumps(legacy), encoding="utf-8")
+            manifest_bytes = source.manifest_path.read_bytes()
+            changed = MemoryRemote(directory, {URL: b"abcdefg"})
+            changed.etag = '"fixture-v2"'
+            with self.assertRaisesRegex(RemoteTabixError, "file size changed"):
+                changed._read_range(URL, 3, 5)
+            self.assertEqual(changed.manifest, legacy)
+            self.assertEqual(source.manifest_path.read_bytes(), manifest_bytes)
+            offline = RemoteTabix(URL, directory, offline=True)
+            self.assertEqual(offline._read_range(URL, 0, 2), b"abc")
+            self.assertEqual(offline.manifest["validators"][URL]["etag"], source.etag)
+            self.assertEqual(source.manifest_path.read_bytes(), manifest_bytes)
+
+    def test_manifest_failure_can_retry_with_uncommitted_new_source(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            source = MemoryRemote(directory, {URL: b"abcdef"})
+            source.retries = 2
+            save = source._save
+            failures = []
+
+            def once(*args, **kwargs):
+                if not failures:
+                    failures.append(True)
+                    source.etag = '"fixture-v2"'
+                    raise OSError("simulated first manifest failure")
+                return save(*args, **kwargs)
+
+            with patch.object(source, "_save", side_effect=once), \
+                    patch("lib_remote_tabix.time.sleep") as sleep:
+                self.assertEqual(source._read_range(URL, 0, 2), b"abc")
+                sleep.assert_called_once_with(1)
+            self.assertEqual(len(source.requests), 2)
+            self.assertEqual(source.manifest["validators"][URL]["etag"], source.etag)
+            self.assertEqual(json.loads(source.manifest_path.read_text()), source.manifest)
+            offline = RemoteTabix(URL, directory, offline=True)
+            self.assertEqual(offline._read_range(URL, 0, 2), b"abc")
+
     def test_small_parallel_ranges_resume_a_failed_batch(self):
         blobs, _, _, _ = fixture()
         blobs[URL] = bytes(range(256)) * 6144
