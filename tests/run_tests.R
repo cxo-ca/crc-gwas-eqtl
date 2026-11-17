@@ -1,5 +1,9 @@
 source('R/bootstrap.R'); source('R/utils.R'); source('R/coloc_pipeline.R')
-must_fail <- function(expr) stopifnot(inherits(tryCatch(force(expr), error = identity), 'error'))
+must_fail <- function(expr, expected) {
+  err <- tryCatch({ force(expr); NULL }, error = identity)
+  stopifnot(inherits(err, 'error'),
+            grepl(expected, conditionMessage(err), fixed = TRUE))
+}
 g <- data.frame(locus = 'L1', chr = 1, pos = 1:4, effect_allele = c('A','A','A','C'),
   other_allele = c('C','G','T','G'), beta = c(.2,.3,.1,.4), se = .05,
   p = c(.001,.002,.03,.01), build = 'GRCh38')
@@ -9,24 +13,37 @@ a <- validate_stats(g, 'gwas'); b <- validate_stats(e, 'eqtl')
 h <- harmonize_pair(a, b)
 stopifnot(nrow(h) == 2, sum(h$allele_flipped) == 1,
           isTRUE(all.equal(h$beta_eqtl_aligned[1], .2)))
-bad <- g; bad$se[1] <- 0; must_fail(validate_stats(bad, 'gwas'))
-bad <- g; bad$p[1] <- -1; must_fail(validate_stats(bad, 'gwas'))
-bad <- g; bad$beta[1] <- NA; must_fail(validate_stats(bad, 'gwas'))
-must_fail(validate_stats(rbind(g, g[1, ]), 'gwas'))
-bad <- g; bad$chr[1] <- 2; must_fail(validate_stats(bad, 'gwas'))
+bad <- g; bad$se[1] <- 0; must_fail(validate_stats(bad, 'gwas'), 'invalid SE')
+bad <- g; bad$p[1] <- -1; must_fail(validate_stats(bad, 'gwas'), 'p must be in (0,1]')
+bad <- g; bad$beta[1] <- NA
+must_fail(validate_stats(bad, 'gwas'), 'missing values in required fields')
+must_fail(validate_stats(rbind(g, g[1, ]), 'gwas'), 'duplicate variant within analysis group')
+bad <- g; bad$chr[1] <- 2
+must_fail(validate_stats(bad, 'gwas'), 'each locus must lie on a single chromosome')
 stopifnot(nrow(harmonize_pair(a[0, ], b)) == 0)
 source('config.R')
-if (requireNamespace('coloc', quietly = TRUE)) {
-  meta <- list(full_region_gwas = FALSE, full_region_eqtl = TRUE,
-    allele_strand = 'forward', gwas_source = 'test', eqtl_source = 'test')
-  must_fail(run_coloc(g, e, meta, config, tempdir()))
-  meta$full_region_gwas <- TRUE
-  bad <- g; bad$build <- 'GRCh37'
-  must_fail(run_coloc(bad, e, meta, config, tempdir()))
+meta <- list(full_region_gwas = TRUE, full_region_eqtl = TRUE,
+  allele_strand = 'forward', gwas_source = 'test', eqtl_source = 'test')
+outdir <- tempfile('rejected-coloc-')
+for (field in c('full_region_gwas', 'full_region_eqtl')) {
+  bad_meta <- meta; bad_meta[[field]] <- FALSE
+  must_fail(run_coloc(g, e, bad_meta, config, outdir),
+            'Coloc requires unthresholded regional statistics for both traits')
 }
+bad_meta <- meta; bad_meta$allele_strand <- 'reverse'
+must_fail(run_coloc(g, e, bad_meta, config, outdir), 'Confirm forward-strand alleles')
+for (field in c('gwas_source', 'eqtl_source')) {
+  bad_meta <- meta; bad_meta[[field]] <- ''
+  must_fail(run_coloc(g, e, bad_meta, config, outdir), 'Record both data sources in metadata')
+}
+bad <- g; bad$build <- 'GRCh37'
+must_fail(run_coloc(bad, e, meta, config, outdir), 'Genome build mismatch')
+bad <- e; bad$build <- 'GRCh37'
+must_fail(run_coloc(g, bad, meta, config, outdir), 'Genome build mismatch')
+stopifnot(!dir.exists(outdir))
 checks <- c('allele flips', 'ambiguous SNP removal', 'invalid input', 'duplicates',
   'single chromosome per locus', 'empty overlap',
-  if (requireNamespace('coloc', quietly = TRUE)) c('full-region guard', 'build guard'))
+  'full-region guard', 'strand guard', 'source metadata guard', 'build guard')
 writeLines(c(paste('PASS:', paste(checks, collapse = ', ')),
   format(Sys.time(), tz = 'UTC', usetz = TRUE)), 'logs/test_results.txt')
 cat(readLines('logs/test_results.txt'), sep = '\n')

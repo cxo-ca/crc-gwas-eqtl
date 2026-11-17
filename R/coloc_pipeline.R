@@ -50,7 +50,6 @@ harmonize_pair <- function(g, e) {
   z[order(z$pos, z$key), ]
 }
 run_coloc <- function(gwas, eqtl, metadata, config, outdir) {
-  if (!requireNamespace('coloc', quietly = TRUE)) stop('Run scripts/setup.R --coloc first')
   if (!isTRUE(metadata$full_region_gwas) || !isTRUE(metadata$full_region_eqtl)) {
     stop('Coloc requires unthresholded regional statistics for both traits')
   }
@@ -62,6 +61,7 @@ run_coloc <- function(gwas, eqtl, metadata, config, outdir) {
   if (any(g$build != config$genome_build) || any(e$build != config$genome_build)) {
     stop('Genome build mismatch: explicit liftover and allele checking required')
   }
+  if (!requireNamespace('coloc', quietly = TRUE)) stop('Run scripts/setup.R --coloc first')
   dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
   groups <- unique(e[c('locus', 'gene_id', 'tissue')])
   output <- list(); qc <- list(); all_harmonized <- list(); warning_rows <- list()
