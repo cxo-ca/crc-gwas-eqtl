@@ -12,7 +12,13 @@ validate_stats <- function(d, kind) {
   if (any(d$pos < 1 | d$pos != floor(d$pos))) stop(kind, ': invalid position')
   if (any(d$se <= 0) || any(!is.finite(d$se^2)) || any(d$se^2 == 0)) stop(kind, ': invalid SE')
   if (any(d$p <= 0 | d$p > 1)) stop(kind, ': p must be in (0,1]; preserve very small p-values')
-  if (kind == 'eqtl' && any(d$sdY <= 0)) stop('eqtl: sdY must be positive')
+  if (kind == 'eqtl') {
+    if (any(d$sdY <= 0)) stop('eqtl: sdY must be positive')
+    phenotype_sd <- unique(d[c('gene_id', 'tissue', 'sdY')])
+    if (anyDuplicated(phenotype_sd[c('gene_id', 'tissue')])) {
+      stop('sdY must be constant within gene/tissue')
+    }
+  }
   d$chr <- sub('^chr', '', as.character(d$chr), ignore.case = TRUE)
   if (any(!d$chr %in% c(as.character(1:22), 'X', 'Y'))) stop(kind, ': invalid chromosome')
   d$effect_allele <- toupper(d$effect_allele)
@@ -79,7 +85,6 @@ run_coloc <- function(gwas, eqtl, metadata, config, outdir) {
       fraction_gwas_shared = if (nrow(a)) nrow(z)/nrow(a) else 0,
       fraction_eqtl_shared = nrow(z)/nrow(b), status = status))
     if (status != 'analyzed') next
-    if (length(unique(z$sdY)) != 1) stop('sdY must be constant within gene/tissue')
     d1 <- list(snp = z$key, position = z$pos, beta = z$beta_gwas,
                varbeta = z$se_gwas^2, type = 'cc')
     d2 <- list(snp = z$key, position = z$pos, beta = z$beta_eqtl_aligned,

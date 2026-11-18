@@ -21,10 +21,30 @@ must_fail(validate_stats(rbind(g, g[1, ]), 'gwas'), 'duplicate variant within an
 bad <- g; bad$chr[1] <- 2
 must_fail(validate_stats(bad, 'gwas'), 'each locus must lie on a single chromosome')
 stopifnot(nrow(harmonize_pair(a[0, ], b)) == 0)
+# sdY describes the gene/tissue phenotype, including variants later excluded.
+bad <- e; bad$sdY[1] <- 2
+invalid_sdY <- list(shared = bad)
+bad <- e; bad$sdY[3] <- 2
+invalid_sdY$palindromic <- bad
+bad <- e; bad$pos[1] <- 1000; bad$sdY[1] <- 2
+invalid_sdY$unshared <- bad
+other_locus <- e; other_locus$locus <- 'L2'
+stopifnot(nrow(validate_stats(rbind(e, other_locus), 'eqtl')) == 2 * nrow(e))
+other_locus$sdY <- 2
+invalid_sdY$across_loci <- rbind(e, other_locus)
+for (bad in invalid_sdY) {
+  must_fail(validate_stats(bad, 'eqtl'), 'sdY must be constant within gene/tissue')
+}
+other_gene <- e; other_gene$gene_id <- 'OTHER_GENE'; other_gene$sdY <- 2
+other_tissue <- e; other_tissue$tissue <- 'OTHER_TISSUE'; other_tissue$sdY <- 3
+stopifnot(nrow(validate_stats(rbind(e, other_gene, other_tissue), 'eqtl')) == 3 * nrow(e))
 source('config.R')
 meta <- list(full_region_gwas = TRUE, full_region_eqtl = TRUE,
   allele_strand = 'forward', gwas_source = 'test', eqtl_source = 'test')
 outdir <- tempfile('rejected-coloc-')
+for (bad in invalid_sdY) {
+  must_fail(run_coloc(g, bad, meta, config, outdir), 'sdY must be constant within gene/tissue')
+}
 for (field in c('full_region_gwas', 'full_region_eqtl')) {
   bad_meta <- meta; bad_meta[[field]] <- FALSE
   must_fail(run_coloc(g, e, bad_meta, config, outdir),
@@ -43,7 +63,7 @@ must_fail(run_coloc(g, bad, meta, config, outdir), 'Genome build mismatch')
 stopifnot(!dir.exists(outdir))
 checks <- c('allele flips', 'ambiguous SNP removal', 'invalid input', 'duplicates',
   'single chromosome per locus', 'empty overlap',
-  'full-region guard', 'strand guard', 'source metadata guard', 'build guard')
+  'sdY per gene/tissue', 'full-region guard', 'strand guard', 'source metadata guard', 'build guard')
 writeLines(c(paste('PASS:', paste(checks, collapse = ', ')),
   format(Sys.time(), tz = 'UTC', usetz = TRUE)), 'logs/test_results.txt')
 cat(readLines('logs/test_results.txt'), sep = '\n')

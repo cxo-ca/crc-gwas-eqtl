@@ -42,6 +42,7 @@ L1	1	10000001	A	C	0.10	0.02	5.733e-7	GRCh38
 확보 자료에 적용한 사전 QC와 정렬 결과는 [DATA_HARMONIZATION.md](DATA_HARMONIZATION.md)에 있습니다. 사전 처리기는 rsID만 다른 동일 통계 중복을 합치고 제외 사유를 기록합니다. 아래 R 입력 검증기는 처리 후에도 남은 중복·결측을 오류로 중단합니다. `*.cleaned.tsv.gz`는 각각 원래 효과 대립유전자를 유지하며, `shared.aligned.tsv.gz`의 `beta_eqtl_aligned`가 GWAS 기준 효과값입니다.
 
 - genome build 불일치, 필수값 결측, SE ≤ 0, p 범위 오류, 동일 분석 그룹의 중복 변이는 오류로 중단합니다.
+- 같은 `gene_id`·`tissue` 조합의 `sdY`는 locus가 달라도 일정해야 합니다. 공통 변이 선택과 대립유전자 제외 전의 전체 eQTL 입력에서 확인하며, 유전자나 조직이 다르면 서로 다른 `sdY`를 허용합니다.
 - 양쪽 자료의 forward strand를 전제로 같은 위치와 대립유전자 쌍을 연결합니다. rsID만으로 coloc 변이를 합치지 않습니다.
 - 대립유전자 순서가 뒤바뀐 경우 eQTL beta 부호를 반전합니다. strand complement 및 liftover는 자동 수행하지 않습니다.
 - A/T, C/G의 모호한 SNP와 indel은 현재 구현에서 제외하고 제외 수를 QC에 저장합니다. 대립유전자 빈도로 모호성을 해결하거나 indel 정규화를 하는 기능은 아직 없습니다. 원인 변이 제외 가능성을 반드시 검토합니다.
