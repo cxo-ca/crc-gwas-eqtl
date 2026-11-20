@@ -1,4 +1,4 @@
-name: R input and alignment checks
+name: R input and coloc checks
 
 on:
   push:
@@ -30,3 +30,22 @@ jobs:
           use-public-rspm: false
       - name: Check inputs and allele alignment
         run: Rscript --vanilla tests/run_tests.R
+
+  coloc-smoke:
+    name: Pinned coloc integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up R
+        uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
+        with:
+          r-version: '4.6.1'
+          use-public-rspm: false
+      - name: Restore pinned test packages
+        run: Rscript --vanilla tests/coloc/setup.R
+      - name: Compare R fits with preserved synthetic results
+        run: Rscript --vanilla tests/run_coloc_smoke.R
