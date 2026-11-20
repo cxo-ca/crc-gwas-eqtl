@@ -18,6 +18,7 @@ actual <- run_coloc(trait_input('gwas'), trait_input('eqtl'), meta, config, outd
 expected <- read_tsv('results/demo/coloc_sensitivity.tsv')
 stopifnot(nrow(actual) == 6L, nrow(expected) == 6L)
 keys <- c('locus', 'gene_id', 'tissue', 'p1', 'p2', 'p12')
+stopifnot(!anyDuplicated(actual[keys]), !anyDuplicated(expected[keys]))
 compared <- merge(actual, expected, by = keys, suffixes = c('_actual', '_expected'))
 stopifnot(nrow(compared) == 6L, all(compared$nsnps_actual == 240L))
 for (hypothesis in paste0('PP_H', 0:4)) {
@@ -28,10 +29,15 @@ for (hypothesis in paste0('PP_H', 0:4)) {
 }
 stopifnot(all(abs(rowSums(actual[paste0('PP_H', 0:4)]) - 1) < 1e-12))
 qc <- read_tsv(file.path(outdir, 'qc.tsv'))
+group_keys <- c('locus', 'gene_id', 'tissue')
 stopifnot(nrow(qc) == 2L, all(qc$n_shared == 240L), all(qc$n_flipped == 120L),
-          all(qc$status == 'analyzed'))
-aligned <- merge(read_tsv(file.path(outdir, 'harmonized.tsv')), input,
-                 by = c('locus', 'gene_id', 'tissue', 'key'), suffixes = c('_actual', '_expected'))
+          all(qc$status == 'analyzed'), !anyDuplicated(qc[group_keys]),
+          nrow(merge(qc[group_keys], unique(expected[group_keys]), by = group_keys)) == 2L)
+aligned <- read_tsv(file.path(outdir, 'harmonized.tsv'))
+row_keys <- c(group_keys, 'key')
+stopifnot(nrow(aligned) == 480L, !anyDuplicated(aligned[row_keys]),
+          !anyDuplicated(input[row_keys]))
+aligned <- merge(aligned, input, by = row_keys, suffixes = c('_actual', '_expected'))
 stopifnot(nrow(aligned) == 480L,
           isTRUE(all.equal(aligned$beta_eqtl_aligned_actual,
                            aligned$beta_eqtl_aligned_expected, tolerance = 1e-12)),
