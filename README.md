@@ -98,7 +98,16 @@ GitHub에서는 Markdown·PNG·PDF를 바로 살펴볼 수 있습니다. HTML �
 |한 장 요약 그림 생성|`matplotlib`, `numpy` · 맑은 고딕 등 생성 코드가 지원하는 한글 글꼴|
 |원본 자료 재수집|네트워크와 `curl.exe` · 기존 결과 열람·정제 자료 재분석에는 불필요|
 
-GitHub Actions는 `main` 푸시, PR, 수동 실행 시 합성 자료로 두 가지 검사를 수행합니다. [Python 단위 테스트](.github/workflows/python-tests.yml)는 Ubuntu의 Python 3.11·3.14에서 실행하고, [R 입력·정렬 검사](.github/workflows/r-tests.yml)는 Ubuntu의 R 4.6.1에서 입력값과 대립유전자 정렬, 공위치 분석 입력의 전체 구간·순방향 대립유전자·자료 출처·유전체 빌드 조건을 확인합니다. 이 사전 검사 테스트는 `coloc` 설치 없이도 항상 실행하며, 예상한 오류 문구와 출력 디렉터리가 생성되지 않는지 확인합니다. `coloc` 모형 실행과 실제 자료 분석은 이 테스트에 포함하지 않습니다.
+GitHub Actions는 `main` 푸시, PR, 수동 실행 시 합성 자료 검사를 수행합니다. [Python 단위 테스트](.github/workflows/python-tests.yml)는 Ubuntu의 Python 3.11·3.14에서 실행합니다. [R 검사](.github/workflows/r-tests.yml)의 기본 작업은 Ubuntu의 R 4.6.1에서 입력값과 대립유전자 정렬, 전체 구간·순방향 대립유전자·자료 출처·유전체 빌드 조건을 확인합니다. 이 기본 검사는 `coloc` 설치 없이 항상 실행하며, 예상한 오류 문구와 출력 디렉터리가 생성되지 않는지 확인합니다.
+
+별도의 [R 모형 통합 검사](tests/run_coloc_smoke.R)는 Ubuntu 24.04·R 4.6.1에서 `coloc 5.2.3`을 실제 실행합니다. [32개 패키지 버전 목록](tests/coloc/package_versions.tsv)과 [2026-09-23 고정 저장소](https://packagemanager.posit.co/cran/2026-09-23)를 사용해 의존성을 설치하고 모든 버전을 확인합니다. 보존된 합성 입력의 6개 분석·30개 posterior를 상대 허용오차 `1e-10`으로 대조하며, 대립유전자 부호 정렬·QC도 검사합니다. 생성 파일은 R 임시 폴더에 저장합니다. 이 환경 목록은 CI 전용이며, 과거 연구 환경은 각 실행의 `sessionInfo.txt`에 별도로 보존합니다. 실제 자료 재분석은 CI에 포함하지 않습니다.
+
+고정된 R 통합 검사를 로컬에서 실행하려면 **별도 체크아웃**에서 아래 명령을 사용하세요. 설치 명령은 `.Rlib/`의 다른 버전 패키지를 목록의 버전으로 교체합니다. 지원 환경은 Windows의 R 4.6.1 또는 CI와 같은 Ubuntu 24.04·R 4.6.1이며, 첫 설치에는 네트워크가 필요합니다.
+
+```powershell
+Rscript --vanilla tests/coloc/setup.R
+Rscript --vanilla tests/run_coloc_smoke.R
+```
 
 [Python posterior 회귀 테스트](tests/test_coloc_posteriors.py)는 보존된 [합성 입력](results/demo/harmonized.tsv)과 [R 결과](results/demo/coloc_sensitivity.tsv)를 사용해 독립 ABF·H0–H4 계산을 대조합니다. 공유·분리 신호 2개 조합의 사전확률 3개 설정, 총 6개 결과의 모든 posterior를 상대 허용오차 `1e-10`으로 확인하며, 별도의 1·2개 SNP 예제로 H3의 서로 다른 원인 변이 조합도 점검합니다. 기준 결과의 환경은 [R 4.6.1 / coloc 5.2.3 기록](results/demo/sessionInfo.txt)에 있습니다. 추가 패키지 설치·네트워크·결과 파일 갱신 없이 실행하며, 현재 R 모형을 다시 실행하거나 실제 자료 분석을 재검증하는 검사는 아닙니다.
 
