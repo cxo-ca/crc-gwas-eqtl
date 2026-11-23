@@ -43,3 +43,35 @@ stopifnot(nrow(aligned) == 480L,
                            aligned$beta_eqtl_aligned_expected, tolerance = 1e-12)),
           identical(aligned$allele_flipped_actual, aligned$allele_flipped_expected))
 cat('PASS: coloc 5.2.3 integration; six fits, 30 posteriors, allele flips and QC\n')
+
+# All-ineligible runs retain diagnostic QC in a fresh directory, including no-GWAS groups.
+g <- trait_input('gwas')
+e <- trait_input('eqtl')
+ineligible <- e[e$pos %in% head(g$pos, config$min_shared_snps - 1L), ]
+no_gwas <- head(e, 10L); no_gwas$locus <- 'SYNTHETIC_NO_GWAS'
+ineligible <- rbind(ineligible, no_gwas)
+must_fail <- function(expr, message) {
+  err <- tryCatch({ force(expr); NULL }, error = identity)
+  stopifnot(inherits(err, 'error'), grepl(message, conditionMessage(err), fixed = TRUE))
+}
+fresh <- tempfile('coloc-ineligible-')
+must_fail(run_coloc(g, ineligible, meta, config, fresh), 'No eligible coloc groups.')
+skipped <- read_tsv(file.path(fresh, 'qc.tsv'))
+stopifnot(nrow(skipped) == 3L, !anyDuplicated(skipped[group_keys]),
+          nrow(merge(skipped[group_keys], unique(ineligible[group_keys]), by = group_keys)) == 3L,
+          all(skipped$status == 'insufficient_shared_snps'),
+          all(skipped$n_shared[skipped$locus == 'SIMULATED_LOCUS'] == 49L),
+          sum(skipped$locus == 'SYNTHETIC_NO_GWAS') == 1L)
+missing <- skipped[skipped$locus == 'SYNTHETIC_NO_GWAS', ]
+stopifnot(missing$n_gwas == 0L, missing$n_shared == 0L, missing$n_eqtl == 10L,
+          missing$fraction_gwas_shared == 0, missing$fraction_eqtl_shared == 0,
+          nrow(read_tsv(file.path(fresh, 'warnings.tsv'))) == 0L,
+          setequal(list.files(fresh), c('qc.tsv', 'warnings.tsv')))
+
+# Reusing a successful directory must not pair old posteriors with newly skipped QC.
+paths <- list.files(outdir, full.names = TRUE)
+before <- tools::md5sum(paths)
+must_fail(run_coloc(g, ineligible, meta, config, outdir), 'Existing output preserved')
+stopifnot(identical(before, tools::md5sum(paths)),
+          identical(paths, list.files(outdir, full.names = TRUE)))
+cat('PASS: all-ineligible QC, missing GWAS and preservation of existing output\n')

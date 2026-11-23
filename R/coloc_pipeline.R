@@ -125,6 +125,9 @@ run_coloc <- function(gwas, eqtl, metadata, config, outdir) {
       group$gene_id, group$tissue, nrow(z)))
   }
   results <- bind_rows(output)
+  if (!nrow(results) && file.exists(file.path(outdir, 'coloc_sensitivity.tsv'))) {
+    stop('No eligible coloc groups. Existing output preserved; use a new output directory for QC.')
+  }
   write_tsv(bind_rows(qc), file.path(outdir, 'qc.tsv'))
   warnings <- if (length(warning_rows)) bind_rows(warning_rows) else data.frame(
     locus = character(), gene_id = character(), tissue = character(),
