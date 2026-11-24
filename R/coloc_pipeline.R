@@ -67,6 +67,11 @@ run_coloc <- function(gwas, eqtl, metadata, config, outdir) {
   if (any(g$build != config$genome_build) || any(e$build != config$genome_build)) {
     stop('Genome build mismatch: explicit liftover and allele checking required')
   }
+  priors <- config$p12
+  if (!is.numeric(priors) || is.complex(priors) || !length(priors) ||
+      any(!is.finite(priors)) || any(priors < 0)) {
+    stop('Invalid config$p12: supply at least one finite, non-negative numeric prior')
+  }
   if (!requireNamespace('coloc', quietly = TRUE)) stop('Run scripts/setup.R --coloc first')
   dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
   groups <- unique(e[c('locus', 'gene_id', 'tissue')])

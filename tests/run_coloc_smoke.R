@@ -75,3 +75,27 @@ must_fail(run_coloc(g, ineligible, meta, config, outdir), 'Existing output prese
 stopifnot(identical(before, tools::md5sum(paths)),
           identical(paths, list.files(outdir, full.names = TRUE)))
 cat('PASS: all-ineligible QC, missing GWAS and preservation of existing output\n')
+
+# Invalid priors must be rejected before changed inputs can overwrite prior plots.
+changed_g <- g; changed_g$p <- sqrt(changed_g$p)
+paths <- list.files(outdir, full.names = TRUE)
+before <- tools::md5sum(paths)
+for (priors in list(NULL, numeric(), -1e-5, Inf, '1e-5')) {
+  bad_config <- config; bad_config$p12 <- priors
+  must_fail(run_coloc(changed_g, e, meta, bad_config, outdir), 'Invalid config$p12')
+  stopifnot(identical(before, tools::md5sum(paths)),
+            identical(paths, list.files(outdir, full.names = TRUE)))
+}
+
+# Preserve coloc's supported zero prior and SNP-count-based automatic adjustment.
+one_gene <- e[e$gene_id == 'SIM_SHARED', ]
+for (prior in c(0, 2)) {
+  compatible <- config; compatible$p12 <- prior
+  fit <- run_coloc(g, one_gene, meta, compatible, tempfile('coloc-prior-'))
+  posterior <- unlist(fit[paste0('PP_H', 0:4)], use.names = FALSE)
+  stopifnot(nrow(fit) == 1L, all(is.finite(posterior)),
+            abs(sum(posterior) - 1) < 1e-12, fit$p12_requested == prior)
+  if (prior == 0) stopifnot(fit$p12 == 0, fit$PP_H4 == 0)
+  else stopifnot(fit$p12 == 1 / (nrow(one_gene) + 1))
+}
+cat('PASS: prior validation, output preservation, zero prior and automatic adjustment\n')

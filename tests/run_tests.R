@@ -42,6 +42,12 @@ source('config.R')
 meta <- list(full_region_gwas = TRUE, full_region_eqtl = TRUE,
   allele_strand = 'forward', gwas_source = 'test', eqtl_source = 'test')
 outdir <- tempfile('rejected-coloc-')
+invalid_priors <- list(NULL, numeric(), NA_real_, NaN, Inf, -Inf, -1e-5,
+                      c(1e-5, NA_real_), c(1e-5, -1e-5), '1e-5', TRUE, 1+0i, list(1e-5))
+for (priors in invalid_priors) {
+  bad_config <- config; bad_config$p12 <- priors
+  must_fail(run_coloc(g, e, meta, bad_config, outdir), 'Invalid config$p12')
+}
 for (bad in invalid_sdY) {
   must_fail(run_coloc(g, bad, meta, config, outdir), 'sdY must be constant within gene/tissue')
 }
@@ -63,7 +69,8 @@ must_fail(run_coloc(g, bad, meta, config, outdir), 'Genome build mismatch')
 stopifnot(!dir.exists(outdir))
 checks <- c('allele flips', 'ambiguous SNP removal', 'invalid input', 'duplicates',
   'single chromosome per locus', 'empty overlap',
-  'sdY per gene/tissue', 'full-region guard', 'strand guard', 'source metadata guard', 'build guard')
+  'sdY per gene/tissue', 'prior settings', 'full-region guard', 'strand guard',
+  'source metadata guard', 'build guard')
 writeLines(c(paste('PASS:', paste(checks, collapse = ', ')),
   format(Sys.time(), tz = 'UTC', usetz = TRUE)), 'logs/test_results.txt')
 cat(readLines('logs/test_results.txt'), sep = '\n')
