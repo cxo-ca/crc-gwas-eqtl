@@ -27,7 +27,8 @@ jobs:
         shell: bash
         run: |
           sudo install -m 0644 .github/apt-r-ci.conf /etc/apt/apt.conf.d/99-crc-gwas-eqtl-ci
-          apt-config dump | grep -E '^(Acquire::Retries|Acquire::(http|https)::Timeout|APT::Install-Recommends) '
+          apt-config dump | grep -Fx 'APT::Install-Recommends "false";'
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - name: Set up R
         uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
         with:
@@ -49,7 +50,8 @@ jobs:
         shell: bash
         run: |
           sudo install -m 0644 .github/apt-r-ci.conf /etc/apt/apt.conf.d/99-crc-gwas-eqtl-ci
-          apt-config dump | grep -E '^(Acquire::Retries|Acquire::(http|https)::Timeout|APT::Install-Recommends) '
+          apt-config dump | grep -Fx 'APT::Install-Recommends "false";'
+          apt-config dump Acquire::Retries Acquire::http::Timeout Acquire::https::Timeout
       - name: Set up R
         uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
         with:
