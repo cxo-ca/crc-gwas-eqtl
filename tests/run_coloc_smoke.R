@@ -86,16 +86,31 @@ for (priors in list(NULL, numeric(), -1e-5, Inf, '1e-5')) {
   stopifnot(identical(before, tools::md5sum(paths)),
             identical(paths, list.files(outdir, full.names = TRUE)))
 }
+for (prior_name in c('p1', 'p2')) {
+  for (priors in list(NULL, numeric(), -1e-5, Inf, '1e-5', c(1e-5, 1e-4))) {
+    bad_config <- config; bad_config[[prior_name]] <- priors
+    must_fail(run_coloc(changed_g, e, meta, bad_config, outdir),
+              paste0('Invalid config$', prior_name))
+    stopifnot(identical(before, tools::md5sum(paths)),
+              identical(paths, list.files(outdir, full.names = TRUE)))
+  }
+}
 
 # Preserve coloc's supported zero prior and SNP-count-based automatic adjustment.
 one_gene <- e[e$gene_id == 'SIM_SHARED', ]
-for (prior in c(0, 2)) {
-  compatible <- config; compatible$p12 <- prior
-  fit <- run_coloc(g, one_gene, meta, compatible, tempfile('coloc-prior-'))
-  posterior <- unlist(fit[paste0('PP_H', 0:4)], use.names = FALSE)
-  stopifnot(nrow(fit) == 1L, all(is.finite(posterior)),
-            abs(sum(posterior) - 1) < 1e-12, fit$p12_requested == prior)
-  if (prior == 0) stopifnot(fit$p12 == 0, fit$PP_H4 == 0)
-  else stopifnot(fit$p12 == 1 / (nrow(one_gene) + 1))
+for (prior_name in c('p1', 'p2', 'p12')) {
+  for (prior in c(0, 2)) {
+    compatible <- config; compatible$p12 <- 1e-5; compatible[[prior_name]] <- prior
+    fit <- run_coloc(g, one_gene, meta, compatible, tempfile('coloc-prior-'))
+    posterior <- unlist(fit[paste0('PP_H', 0:4)], use.names = FALSE)
+    stopifnot(nrow(fit) == 1L, all(is.finite(posterior)),
+              abs(sum(posterior) - 1) < 1e-12,
+              fit[[paste0(prior_name, '_requested')]] == prior)
+    if (prior == 0) {
+      zero_hypotheses <- switch(prior_name, p1 = c('PP_H1', 'PP_H3'),
+                               p2 = c('PP_H2', 'PP_H3'), p12 = 'PP_H4')
+      stopifnot(fit[[prior_name]] == 0, all(fit[zero_hypotheses] == 0))
+    } else stopifnot(fit[[prior_name]] == 1 / (nrow(one_gene) + 1))
+  }
 }
-cat('PASS: prior validation, output preservation, zero prior and automatic adjustment\n')
+cat('PASS: prior validation (p1, p2, p12), output preservation, zero prior and automatic adjustment\n')

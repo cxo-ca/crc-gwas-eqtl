@@ -48,6 +48,12 @@ for (priors in invalid_priors) {
   bad_config <- config; bad_config$p12 <- priors
   must_fail(run_coloc(g, e, meta, bad_config, outdir), 'Invalid config$p12')
 }
+for (prior_name in c('p1', 'p2')) {
+  for (priors in c(invalid_priors, list(c(1e-5, 1e-4)))) {
+    bad_config <- config; bad_config[[prior_name]] <- priors
+    must_fail(run_coloc(g, e, meta, bad_config, outdir), paste0('Invalid config$', prior_name))
+  }
+}
 for (bad in invalid_sdY) {
   must_fail(run_coloc(g, bad, meta, config, outdir), 'sdY must be constant within gene/tissue')
 }
