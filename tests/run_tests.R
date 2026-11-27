@@ -54,6 +54,17 @@ for (prior_name in c('p1', 'p2')) {
     must_fail(run_coloc(g, e, meta, bad_config, outdir), paste0('Invalid config$', prior_name))
   }
 }
+invalid_qc <- list(
+  min_shared_snps = list(NULL, numeric(), NA_real_, NaN, Inf, -Inf, 0, -1, 1.5,
+                         c(1, 2), '50', TRUE, 1+0i, list(1)),
+  pp4_threshold = list(NULL, numeric(), NA_real_, NaN, Inf, -Inf, -.01, 1.01,
+                      c(.5, .8), '0.8', TRUE, 1+0i, list(.8)))
+for (field in names(invalid_qc)) {
+  for (value in invalid_qc[[field]]) {
+    bad_config <- config; bad_config[[field]] <- value
+    must_fail(run_coloc(g, e, meta, bad_config, outdir), paste0('Invalid config$', field))
+  }
+}
 for (bad in invalid_sdY) {
   must_fail(run_coloc(g, bad, meta, config, outdir), 'sdY must be constant within gene/tissue')
 }
@@ -75,7 +86,7 @@ must_fail(run_coloc(g, bad, meta, config, outdir), 'Genome build mismatch')
 stopifnot(!dir.exists(outdir))
 checks <- c('allele flips', 'ambiguous SNP removal', 'invalid input', 'duplicates',
   'single chromosome per locus', 'empty overlap',
-  'sdY per gene/tissue', 'prior settings', 'full-region guard', 'strand guard',
+  'sdY per gene/tissue', 'prior settings', 'QC settings', 'full-region guard', 'strand guard',
   'source metadata guard', 'build guard')
 writeLines(c(paste('PASS:', paste(checks, collapse = ', ')),
   format(Sys.time(), tz = 'UTC', usetz = TRUE)), 'logs/test_results.txt')

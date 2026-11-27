@@ -77,6 +77,16 @@ run_coloc <- function(gwas, eqtl, metadata, config, outdir) {
            ' finite, non-negative numeric prior')
     }
   }
+  minimum <- config$min_shared_snps
+  if (!is.numeric(minimum) || is.complex(minimum) || length(minimum) != 1L ||
+      !is.finite(minimum) || minimum < 1 || minimum != floor(minimum)) {
+    stop('Invalid config$min_shared_snps: supply one positive integer SNP count')
+  }
+  cutoff <- config$pp4_threshold
+  if (!is.numeric(cutoff) || is.complex(cutoff) || length(cutoff) != 1L ||
+      !is.finite(cutoff) || cutoff < 0 || cutoff > 1) {
+    stop('Invalid config$pp4_threshold: supply one finite numeric cutoff in [0, 1]')
+  }
   if (!requireNamespace('coloc', quietly = TRUE)) stop('Run scripts/setup.R --coloc first')
   dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
   groups <- unique(e[c('locus', 'gene_id', 'tissue')])

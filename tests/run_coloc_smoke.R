@@ -114,3 +114,37 @@ for (prior_name in c('p1', 'p2', 'p12')) {
   }
 }
 cat('PASS: prior validation (p1, p2, p12), output preservation, zero prior and automatic adjustment\n')
+
+# Malformed QC settings must not replace existing plots, flags or result rows.
+bad_qc <- list(min_shared_snps = list(NULL, NA_real_, 0, 1.5, '50', c(1, 2)),
+               pp4_threshold = list(NULL, NA_real_, c(.5, .8), -.01, 1.01))
+for (field in names(bad_qc)) {
+  for (value in bad_qc[[field]]) {
+    bad_config <- config; bad_config[[field]] <- value
+    must_fail(run_coloc(changed_g, e, meta, bad_config, outdir), paste0('Invalid config$', field))
+    stopifnot(identical(before, tools::md5sum(paths)),
+              identical(paths, list.files(outdir, full.names = TRUE)))
+  }
+}
+
+# A positive minimum of one and the documented exact 50-SNP boundary are supported.
+for (minimum in c(1L, 50L)) {
+  boundary_config <- config; boundary_config$min_shared_snps <- minimum
+  boundary_config$p12 <- 1e-5
+  boundary_output <- tempfile('coloc-count-boundary-')
+  fit <- run_coloc(g, head(one_gene, minimum), meta, boundary_config, boundary_output)
+  boundary_qc <- read_tsv(file.path(boundary_output, 'qc.tsv'))
+  posterior <- unlist(fit[paste0('PP_H', 0:4)], use.names = FALSE)
+  stopifnot(nrow(fit) == 1L, fit$nsnps == minimum, nrow(boundary_qc) == 1L,
+            boundary_qc$n_shared == minimum, boundary_qc$status == 'analyzed',
+            all(is.finite(posterior)), abs(sum(posterior) - 1) < 1e-12)
+  if (minimum == 1L) stopifnot(fit$PP_H3 == 0)
+}
+# PP.H4=0 at a zero sharing prior also exercises the inclusive cutoff at zero.
+for (cutoff in c(0, 1)) {
+  boundary_config <- config; boundary_config$p12 <- 0; boundary_config$pp4_threshold <- cutoff
+  fit <- run_coloc(g, one_gene, meta, boundary_config, tempfile('coloc-cutoff-boundary-'))
+  stopifnot(nrow(fit) == 1L, fit$PP_H4 == 0, !is.na(fit$passes_pp4),
+            identical(fit$passes_pp4, cutoff == 0))
+}
+cat('PASS: QC setting validation, output preservation and supported count/cutoff boundaries\n')
